@@ -1,0 +1,259 @@
+#include "City.h"
+
+using namespace std;
+
+map<Direction, Direction> City::leftOf = City::createLeftOf();
+map<Direction, Direction> City::rightOf = City::createRightOf();
+map<Direction, int> City::polarityOf = City::createPolarityOf();
+map<Direction, Axis> City::axisOf = City::createAxisOf();
+
+City::City(){
+	this->maxE = STARTX;
+	this->maxS = STARTY;
+	this->maxW = STARTX;
+	this->maxN = STARTY;
+	this->insertCourt(new Court(STARTX, STARTY, STARTX-7, STARTY-4));
+	this->insertCourt(new Court(95, 37, 91, 33));
+	this->insertCourt(new Court(98, 44, 92, 38));
+	//this->insertCourt(new Court(91, 44, 85, 41));
+	this->insertCourt(new Court(87, 44, 85, 42));
+	this->insertCourt(new Court(91, 46, 88, 41));
+}
+
+City::~City(){
+	//this->clearPerimeterAndConcaves(); //FIXME:
+}
+
+/*
+ * Return pseudorandom unsigned integer between two values (inclusive)
+ */
+unsigned int City::ran(int from, int to){
+	static std::mt19937 rng;
+	static bool seed_set = false;
+	if(!seed_set){
+		rng.seed(time(NULL));
+		seed_set = true;
+	}
+	std::uniform_int_distribution<uint32_t> dist(from, to);
+	return dist(rng);
+}
+
+unsigned int City::absolute(int num){
+	if (num < 0)
+		return num * (-1);
+	return num;
+}
+
+void City::toFile(ofstream &file){
+
+	// Starting boilerplate
+	file << "<?xml version=\"1.0\"?>" << endl;
+	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"" << (WIDTH * SCALE_FACTOR) << "\" height=\"" << (HEIGHT * SCALE_FACTOR) << "\" style=\"background: " << BG_COLOUR << "\">" << endl;
+
+	// Content (courtyards)
+	for (auto it = this->courts.begin(); it != this->courts.end(); it++){
+		(*it)->toFile(file);
+	}
+
+	// Perimeter
+	auto it = this->perimeter.begin();
+	if(it != this->perimeter.end()){
+		auto jt = it;
+		jt++;
+		while(jt != perimeter.end()){
+			unsigned int x1 = (*it)->getCoord(XAXIS) * SCALE_FACTOR;
+			unsigned int x2 = (*jt)->getCoord(XAXIS) * SCALE_FACTOR;
+			unsigned int y1 = (*it)->getCoord(YAXIS) * SCALE_FACTOR;
+			unsigned int y2 = (*jt)->getCoord(YAXIS) * SCALE_FACTOR;
+
+			//cout << "\t\tx1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2 << endl;
+
+			file << "<line x1=\"" << x1 << "\" y1=\"" << y1 << "\" x2=\"" << x2 << "\" y2=\"" << y2 << "\" style=\"stroke:rgb(0,255,255);stroke-width:2\" />" << endl;
+
+			file << "<circle cx=\"" << x1 << "\" cy=\"" << y1 << "\" r=\"2\" style=\"stroke:rgb(0,0,255);stroke-width:1\" />" << endl;
+			file << "<circle cx=\"" << x2 << "\" cy=\"" << y2 << "\" r=\"2\" style=\"stroke:rgb(0,0,255);stroke-width:1\" />" << endl;
+
+			it++;
+			jt++;
+		}
+	}
+
+	// Concave points
+	for(auto kt = this->concaves.begin(); kt != this->concaves.end(); kt++){
+		unsigned int x = (*kt)->getCoord(XAXIS) * SCALE_FACTOR;
+		unsigned int y = (*kt)->getCoord(YAXIS) * SCALE_FACTOR;
+
+		file << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"5\" style=\"stroke:rgb(128,128,255);stroke-width:1\" />" << endl;
+	}
+
+	// Ending boilerplate
+	file << "</svg>" << endl;
+}
+
+/*
+ * Insert an already-created court into this city
+ */
+void City::insertCourt(Court * court){
+	this->courts.push_back(court);
+	
+	unsigned int courtea = court->getEdge(EAST);
+	unsigned int courtso = court->getEdge(SOUTH);
+	unsigned int courtwe = court->getEdge(WEST);
+	unsigned int courtno = court->getEdge(NORTH);
+
+	if(courtea > this->maxE)
+		this->maxE = courtea;
+	if(courtso > this->maxS)
+		this->maxS = courtso;
+	if(courtwe < this->maxW)
+		this->maxW = courtwe;
+	if(courtno < this->maxN)
+		this->maxN = courtno;
+}
+
+/*
+ * Create a new court in this city
+ */
+Court * City::createCourt(){
+	this->updatePerimeter();
+	Court * newCourt = NULL;
+	// TODO:
+	return newCourt;
+}
+
+/*
+ * Clear the previous perimeter and concave points
+ */
+void City::clearPerimeterAndConcaves(){
+	for(auto it = this->perimeter.begin(); it != this->perimeter.end(); it++){
+		delete (*it);
+	}
+	this->perimeter.clear();
+	for(auto it = this->concaves.begin(); it != this->concaves.end(); it++){
+		delete (*it);
+	}
+	this->concaves.clear();	
+}
+
+/*
+ * Update the perimeter and concave points of this city
+ */
+void City::updatePerimeter(){
+	this->clearPerimeterAndConcaves();
+
+	Court * currCourt = this->getStartingCourt();
+	int startX = currCourt->getEdge(WEST);
+	int startY = currCourt->getEdge(NORTH);
+	Direction currDir = EAST;
+
+	Point * startingPoint = new Point(XAXIS, startX, YAXIS, startY);
+	Point * currPoint = startingPoint;
+
+	this->perimeter.push_back(startingPoint); // FIXME: possibly should not add, only use to compare against
+
+	do {
+		cout << "Travelling: ";
+		switch(currDir){
+			case EAST: cout << "EAST"; break;
+			case SOUTH: cout << "SOUTH"; break;
+			case WEST: cout << "WEST"; break;
+			case NORTH: cout << "NORTH"; break;
+		}
+		cout << endl;
+
+		currCourt = this->travelClockwise(currCourt, currPoint, currDir);
+	} while (!currPoint->equals(startingPoint));
+
+}
+
+/*
+ * Travel the city's perimeter clockwise, adding a perimeter point and a concave point if appropriate
+ */
+Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &currDir){
+	Direction leftDir = City::leftOf[currDir];
+	Direction rightDir = City::rightOf[currDir];
+	int polarity = City::polarityOf[currDir];
+	int leftPolarity = City::polarityOf[leftDir];
+	Axis currAxis = City::axisOf[currDir];
+	Axis perpendicularAxis = (currAxis == XAXIS) ? YAXIS : XAXIS;
+
+	unsigned int dimToStay = currCourt->getEdge(leftDir);
+	unsigned int firstPoint = currPoint->getCoord(currAxis);
+	unsigned int lastPoint = currCourt->getEdge(currDir);
+
+	unsigned int dimToChange = firstPoint;
+	unsigned int match;
+	Court * provCourt;
+
+	while(dimToChange != lastPoint){
+		dimToChange += 1 * (polarity);
+		provCourt = this->findNeighbouringCourt(currCourt, dimToStay, dimToChange, perpendicularAxis, leftPolarity, match);
+		if(provCourt){
+			currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+			this->perimeter.push_back(currPoint);
+			this->concaves.push_back(new Concave(currAxis, dimToChange, perpendicularAxis, dimToStay, currDir));
+			currDir = leftDir;
+			return provCourt;
+		}
+	}
+
+	provCourt = this->findNeighbouringCourt(currCourt, dimToChange, dimToStay, currAxis, polarity, match);
+	if(provCourt){
+		dimToChange = match;
+		if(dimToStay == provCourt->getEdge(leftDir)){ // Continuing along the edge; do not add point or change direction
+			//this->perimeter.push_back(new Point(currAxis, dimToChange, perpendicularAxis, dimToStay));
+			return provCourt;
+		}
+		else{
+			currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+			this->perimeter.push_back(currPoint);
+			this->concaves.push_back(new Concave(currAxis, dimToChange, perpendicularAxis, dimToStay, currDir));
+			currDir = leftDir;
+			return provCourt;
+		}
+	}
+	else{
+		currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+		this->perimeter.push_back(currPoint);
+		currDir = rightDir;
+		return currCourt;
+	}
+}
+
+/*
+ * Find a court adjacent to a given court, relevant to perimeter calculation
+ */
+Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange, unsigned int dimToStay, Axis normalAxis, int polarity, unsigned int &match){
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		Court * court = (*it);
+		for(int i = BUILDING_DEPTH_MIN; i <= BUILDING_DEPTH_MAX; ++i){
+			unsigned int proposed = dimToChange + (i * (polarity));
+			if(court != baseCourt && court->hasOnPerimeter(normalAxis, proposed, dimToStay)){
+				match = proposed;
+				return court;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+/*
+ * Return the court that the perimeter calculation should be started at
+ */
+Court * City::getStartingCourt(){
+	unsigned int ver = MAX_X;
+	Court * result = NULL;
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		Court * court = (*it);
+		if(court->getEdge(NORTH) == this->maxN){
+			unsigned int left = court->getEdge(WEST);
+			if(left < ver){
+				ver = left;
+				result = court;
+			}
+		}
+	}
+
+	return result;
+}
