@@ -12,16 +12,21 @@ City::City(){
 	this->maxS = STARTY;
 	this->maxW = STARTX;
 	this->maxN = STARTY;
-	this->insertCourt(new Court(STARTX, STARTY, STARTX-7, STARTY-4));
-	this->insertCourt(new Court(95, 37, 91, 33));
-	this->insertCourt(new Court(98, 44, 92, 38));
-	//this->insertCourt(new Court(91, 44, 85, 41));
-	this->insertCourt(new Court(87, 44, 85, 42));
-	this->insertCourt(new Court(91, 46, 88, 41));
+
+	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4));
+	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33));
+	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38));
+	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42));
+	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41));
 }
 
 City::~City(){
-	//this->clearPerimeterAndConcaves(); //FIXME:
+	/*
+	this->clearPerimeterAndConcaves(); //FIXME:
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		delete (*it);
+	}
+	*/
 }
 
 /*

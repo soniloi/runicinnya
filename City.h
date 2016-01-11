@@ -30,7 +30,7 @@ private:
 	int maxW; //
 	int maxE; //
 
-	std::vector<Point *> perimeter;
+	std::vector<Point *> perimeter; // FIXME: use list instead?
 	std::vector<Concave *> concaves;
 
 	static unsigned int ran(int from, int to);

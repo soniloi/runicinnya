@@ -29,7 +29,7 @@ private:
 	unsigned int getMaxSecondDimension(unsigned int first);
 
 public:
-	Court(unsigned int e, unsigned int s, unsigned int w, unsigned int n);
+	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2);
 	~Court();
 	unsigned int getEdge(Direction dir);
 

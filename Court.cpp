@@ -2,13 +2,45 @@
 
 /*
  * Constructor
+ * FIXME: refactor
  */
-Court::Court(unsigned int e, unsigned int s, unsigned int w, unsigned int n){
-	this->edges[EAST] = e;
-	this->edges[SOUTH] = s;
-	this->edges[WEST] = w;
-	this->edges[NORTH] = n;
-
+Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2){
+	if(primaryAxis == YAXIS){
+		if(primary1 > primary2){
+			this->edges[SOUTH] = primary1;
+			this->edges[NORTH] = primary2;
+		}
+		else{
+			this->edges[SOUTH] = primary2;
+			this->edges[NORTH] = primary1;
+		}
+		if(cross1 > cross2){
+			this->edges[EAST] = cross1;
+			this->edges[WEST] = cross2;
+		}
+		else{
+			this->edges[EAST] = cross2;
+			this->edges[WEST] = cross1;
+		}
+	}
+	else{
+		if(primary1 > primary2){
+			this->edges[EAST] = primary1;
+			this->edges[WEST] = primary2;
+		}
+		else{
+			this->edges[EAST] = primary2;
+			this->edges[WEST] = primary1;
+		}
+		if(cross1 > cross2){
+			this->edges[SOUTH] = cross1;
+			this->edges[NORTH] = cross2;
+		}
+		else{
+			this->edges[SOUTH] = cross2;
+			this->edges[NORTH] = cross1;
+		}
+	}
 	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
 }
 
