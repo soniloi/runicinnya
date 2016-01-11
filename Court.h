@@ -11,8 +11,8 @@
 #include "Point.h"
 
 #define COURT_STYLE "fill:rgb(255,128,255);stroke-width:1;stroke:rgb(0,0,0)"
-#define DIM_MAX 5
-#define DIM_MIN 1
+#define COURT_DIM_MAX 5
+#define COURT_DIM_MIN 1
 #define MAX_RATIO 3
 #define RSEED 717
 #define SCALE_FACTOR 10
@@ -25,15 +25,14 @@ class Court {
 private:
 	std::map<Direction, unsigned int> edges;
 
-	unsigned int getMinSecondDimension(unsigned int first);
-	unsigned int getMaxSecondDimension(unsigned int first);
-
 public:
 	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2);
 	~Court();
 	unsigned int getEdge(Direction dir);
 
 	bool hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2);
+	static unsigned int getMinSecondDimension(unsigned int first);
+	static unsigned int getMaxSecondDimension(unsigned int first);
 
 	void toFile(std::ostream &file);
 };

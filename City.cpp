@@ -117,12 +117,46 @@ void City::insertCourt(Court * court){
 }
 
 /*
- * Create a new court in this city
+ * Create a new court somewhere random in this city
  */
 Court * City::createCourt(){
 	this->updatePerimeter();
 	Court * newCourt = NULL;
-	// TODO:
+
+	unsigned int noConcaves = this->concaves.size();
+
+	if(noConcaves > 0){
+		Concave * concave = this->concaves[City::ran(0, noConcaves-1)]; // TODO:
+
+		Direction rightEdge = concave->getRightEdge();
+		Axis rightAxis = City::axisOf[rightEdge];
+		int rightPolarity = City::polarityOf[rightEdge];
+
+		Direction lowerEdge = City::leftOf[rightEdge];
+		Axis lowerAxis = (rightAxis == XAXIS) ? YAXIS : XAXIS;
+		int lowerPolarity = City::polarityOf[lowerEdge];
+
+		unsigned int concaveRightDim = concave->getCoord(rightAxis);
+		unsigned int concaveLowerDim = concave->getCoord(lowerAxis);
+
+		unsigned int newRightDim, newLowerDim, newLeftDim, newUpperDim;
+
+		// Get starting point of new court
+		newRightDim = concaveRightDim - (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * rightPolarity);
+		if(City::absolute(concaveRightDim - newRightDim) > BUILDING_DEPTH_MIN)
+			newLowerDim = concaveLowerDim + (BUILDING_DEPTH_MIN * lowerPolarity);
+		else
+			newLowerDim = concaveLowerDim + (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * lowerPolarity);
+
+		// Get other edges of new court
+		newLeftDim = newRightDim - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
+		unsigned int firstDim = City::absolute(newRightDim - newLeftDim);
+		newUpperDim = newLowerDim + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+
+		newCourt = new Court(rightAxis, newRightDim, newLeftDim, newLowerDim, newUpperDim);
+		this->insertCourt(newCourt);
+	}
+
 	return newCourt;
 }
 

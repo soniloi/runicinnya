@@ -85,8 +85,8 @@ bool Court::hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2
  */
 unsigned int Court::getMinSecondDimension(unsigned int first){
 	int second = first / MAX_RATIO + 1;
-	if(second < DIM_MIN)
-		second = DIM_MIN;
+	if(second < COURT_DIM_MIN)
+		second = COURT_DIM_MIN;
 	return second;
 }
 
@@ -95,8 +95,8 @@ unsigned int Court::getMinSecondDimension(unsigned int first){
  */
 unsigned int Court::getMaxSecondDimension(unsigned int first){
 	int second = first * MAX_RATIO;
-	if(second > DIM_MAX)
-		second = DIM_MAX;
+	if(second > COURT_DIM_MAX)
+		second = COURT_DIM_MAX;
 	return second;
 }
 
