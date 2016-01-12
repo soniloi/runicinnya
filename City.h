@@ -41,6 +41,7 @@ private:
 	Court * findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange, unsigned int dimToStay, Axis normalAxis, int polarity, unsigned int &match);
 
 	void insertCourt(Court * court);
+	Court * createInitialCourt();
 	Court * createCourt();
 	Court * createCourtConvex();
 	Court * createCourtConcave();

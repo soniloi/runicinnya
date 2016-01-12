@@ -19,7 +19,7 @@ void writeFile(City c){
 
 int main(){
 	City c;
-	c.generate(2);
+	c.generate(6);
 	writeFile(c);
 	return 0;
 }

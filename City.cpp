@@ -109,7 +109,9 @@ void City::generate(unsigned int noCourts){
 	if(noCourts == 0)
 		return;
 
-	for(int i = 0; i < noCourts; ++i){
+	this->createInitialCourt();
+
+	for(int i = 1; i < noCourts; ++i){
 		this->createCourt();
 		this->updatePerimeter();
 	}
@@ -137,11 +139,22 @@ void City::insertCourt(Court * court){
 }
 
 /*
+ * Create the first court in this city
+ */
+Court * City::createInitialCourt(){
+	Court * newCourt = this->createCourtConvex();
+	this->maxCoords[EAST] = newCourt->getEdge(EAST);
+	this->maxCoords[SOUTH] = newCourt->getEdge(SOUTH);
+	this->maxCoords[WEST] = newCourt->getEdge(WEST);
+	this->maxCoords[NORTH] = newCourt->getEdge(NORTH);
+	return newCourt;
+}
+
+/*
  * Create a new court somewhere random in this city
  */
 Court * City::createCourt(){
 	Court * newCourt;
-	//cout << "concaves.size: " << this->concaves.size() << endl;
 	if(this->concaves.size() == 0)
 		newCourt = this->createCourtConvex();
 	else
@@ -154,7 +167,6 @@ Court * City::createCourt(){
  * Create a new court somewhere outside the current perimeter of this city
  */
 Court * City::createCourtConvex(){
-	//cout << "Creating CONVEX" << endl;
 	Court * newCourt = NULL;
 
 	// Choose a side at random to add the new court on, and which direction from that the new court should fan
