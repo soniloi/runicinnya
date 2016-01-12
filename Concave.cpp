@@ -1,9 +1,9 @@
 #include "Concave.h"
 
-// FIXME: only one axis parameter needed here
-Concave::Concave(Axis a1, unsigned int val1, Axis a2, unsigned int val2, Direction dir){
-	this->coords[a1] = val1;
-	this->coords[a2] = val2;
+Concave::Concave(Axis primaryAxis, unsigned int val1, unsigned int val2, Direction dir){
+	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
+	this->coords[primaryAxis] = val1;
+	this->coords[crossAxis] = val2;
 	this->rightEdge = dir;
 }
 

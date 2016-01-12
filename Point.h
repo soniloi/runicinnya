@@ -11,7 +11,7 @@ private:
 	std::map<Axis, unsigned int> coords;
 
 public:
-	Point(Axis a1, unsigned int val1, Axis a2, unsigned int val2);
+	Point(Axis primaryAxis, unsigned int val1, unsigned int val2);
 	unsigned int getCoord(Axis a);
 	bool equals(Point * other);
 };

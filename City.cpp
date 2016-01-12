@@ -12,13 +12,13 @@ City::City(){
 	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
 
 	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4));
-	this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4));
-	/*
+	//this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4));
+	
 	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33));
 	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38));
 	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42));
 	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41));
-	*/
+	
 	this->updatePerimeter();
 }
 
@@ -240,7 +240,7 @@ void City::updatePerimeter(){
 	int startY = currCourt->getEdge(NORTH);
 	Direction currDir = EAST;
 
-	Point * startingPoint = new Point(XAXIS, startX, YAXIS, startY);
+	Point * startingPoint = new Point(XAXIS, startX, startY);
 	Point * currPoint = startingPoint;
 
 	this->perimeter.push_back(startingPoint); // FIXME: possibly should not add, only use to compare against
@@ -284,9 +284,9 @@ Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &
 		dimToChange += 1 * (polarity);
 		provCourt = this->findNeighbouringCourt(currCourt, dimToStay, dimToChange, perpendicularAxis, leftPolarity, match);
 		if(provCourt){
-			currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+			currPoint = new Point(currAxis, dimToChange, dimToStay);
 			this->perimeter.push_back(currPoint);
-			this->concaves.push_back(new Concave(currAxis, dimToChange, perpendicularAxis, dimToStay, currDir));
+			this->concaves.push_back(new Concave(currAxis, dimToChange, dimToStay, currDir));
 			currDir = leftDir;
 			return provCourt;
 		}
@@ -296,19 +296,19 @@ Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &
 	if(provCourt){
 		dimToChange = match;
 		if(dimToStay == provCourt->getEdge(leftDir)){ // Continuing along the edge; do not add point or change direction
-			//this->perimeter.push_back(new Point(currAxis, dimToChange, perpendicularAxis, dimToStay));
+			//this->perimeter.push_back(new Point(currAxis, dimToChange, dimToStay));
 			return provCourt;
 		}
 		else{
-			currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+			currPoint = new Point(currAxis, dimToChange, dimToStay);
 			this->perimeter.push_back(currPoint);
-			this->concaves.push_back(new Concave(currAxis, dimToChange, perpendicularAxis, dimToStay, currDir));
+			this->concaves.push_back(new Concave(currAxis, dimToChange, dimToStay, currDir));
 			currDir = leftDir;
 			return provCourt;
 		}
 	}
 	else{
-		currPoint = new Point(currAxis, dimToChange, perpendicularAxis, dimToStay);
+		currPoint = new Point(currAxis, dimToChange, dimToStay);
 		this->perimeter.push_back(currPoint);
 		currDir = rightDir;
 		return currCourt;
