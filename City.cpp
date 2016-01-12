@@ -11,6 +11,7 @@ City::City(){
 	this->maxCoords[EAST] = this->maxCoords[WEST] = STARTX;
 	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
 
+/*
 	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4));
 	//this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4));
 	
@@ -20,6 +21,7 @@ City::City(){
 	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41));
 	
 	this->updatePerimeter();
+*/
 }
 
 City::~City(){
@@ -103,6 +105,16 @@ void City::toFile(ofstream &file){
 	file << "</svg>" << endl;
 }
 
+void City::generate(unsigned int noCourts){
+	if(noCourts == 0)
+		return;
+
+	for(int i = 0; i < noCourts; ++i){
+		this->createCourt();
+		this->updatePerimeter();
+	}
+}
+
 /*
  * Insert an already-created court into this city
  */
@@ -129,12 +141,12 @@ void City::insertCourt(Court * court){
  */
 Court * City::createCourt(){
 	Court * newCourt;
+	//cout << "concaves.size: " << this->concaves.size() << endl;
 	if(this->concaves.size() == 0)
 		newCourt = this->createCourtConvex();
 	else
 		newCourt = this->createCourtConcave();
 
-	this->updatePerimeter();
 	return newCourt;
 }
 
@@ -142,6 +154,7 @@ Court * City::createCourt(){
  * Create a new court somewhere outside the current perimeter of this city
  */
 Court * City::createCourtConvex(){
+	//cout << "Creating CONVEX" << endl;
 	Court * newCourt = NULL;
 
 	// Choose a side at random to add the new court on, and which direction from that the new court should fan
@@ -236,6 +249,9 @@ void City::updatePerimeter(){
 	this->clearPerimeterAndConcaves();
 
 	Court * currCourt = this->getStartingCourt();
+	if(!currCourt)
+		return;
+
 	int startX = currCourt->getEdge(WEST);
 	int startY = currCourt->getEdge(NORTH);
 	Direction currDir = EAST;
@@ -246,6 +262,7 @@ void City::updatePerimeter(){
 	this->perimeter.push_back(startingPoint); // FIXME: possibly should not add, only use to compare against
 
 	do {
+		/*
 		cout << "Travelling: ";
 		switch(currDir){
 			case EAST: cout << "EAST"; break;
@@ -255,7 +272,7 @@ void City::updatePerimeter(){
 			default: break;
 		}
 		cout << endl;
-
+*/
 		currCourt = this->travelClockwise(currCourt, currPoint, currDir);
 	} while (!currPoint->equals(startingPoint));
 

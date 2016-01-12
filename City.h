@@ -41,6 +41,9 @@ private:
 	Court * findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange, unsigned int dimToStay, Axis normalAxis, int polarity, unsigned int &match);
 
 	void insertCourt(Court * court);
+	Court * createCourt();
+	Court * createCourtConvex();
+	Court * createCourtConcave();
 
 	static std::map<Direction, Direction> createLeftOf(){
 		std::map<Direction, Direction> m;
@@ -86,10 +89,7 @@ public:
 	City();
 	~City();
 	void toFile(std::ofstream &file);
-
-	Court * createCourt();
-	Court * createCourtConvex();
-	Court * createCourtConcave();
+	void generate(unsigned int noCourts);
 };
 
 #endif
