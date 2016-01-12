@@ -12,7 +12,7 @@ private:
 	Direction rightEdge;
 
 public:
-	Concave(Axis primaryAxis, unsigned int val1, unsigned int val2, Direction dir);
+	Concave(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord, Direction dir);
 	unsigned int getCoord(Axis a);
 	Direction getRightEdge();
 };

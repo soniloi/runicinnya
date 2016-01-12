@@ -1,9 +1,9 @@
 #include "Concave.h"
 
-Concave::Concave(Axis primaryAxis, unsigned int val1, unsigned int val2, Direction dir){
+Concave::Concave(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord, Direction dir){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
-	this->coords[primaryAxis] = val1;
-	this->coords[crossAxis] = val2;
+	this->coords[primaryAxis] = primaryCoord;
+	this->coords[crossAxis] = crossCoord;
 	this->rightEdge = dir;
 }
 

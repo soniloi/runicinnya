@@ -1,9 +1,9 @@
 #include "Point.h"
 
-Point::Point(Axis primaryAxis, unsigned int val1, unsigned int val2){
+Point::Point(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
-	this->coords[primaryAxis] = val1;
-	this->coords[crossAxis] = val2;
+	this->coords[primaryAxis] = primaryCoord;
+	this->coords[crossAxis] = crossCoord;
 	//std::cout << "a1: " << a1 << " val1: " << val1 << " a2: " << " val2: " << val2 << std::endl;
 }
 
