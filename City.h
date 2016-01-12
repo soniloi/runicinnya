@@ -24,17 +24,15 @@
 class City {
 private:
 	std::list<Court *> courts; // All courtyards making up this city
-	// These get updated on every Court insert; just test whether the Court being inserted expands these boundaries
-	int maxN; // Most northerly distance of this city
-	int maxS; //
-	int maxW; //
-	int maxE; //
+	// This map gets updated on every Court insert; just test whether the Court being inserted expands these boundaries
+	std::map<Direction, unsigned int> maxCoords;
 
 	std::vector<Point *> perimeter; // FIXME: use list instead?
 	std::vector<Concave *> concaves;
 
 	static unsigned int ran(int from, int to);
 	static unsigned int absolute(int num);
+	static void swap(unsigned int &num1, unsigned int &num2);
 
 	void clearPerimeterAndConcaves();
 	void updatePerimeter();
@@ -90,6 +88,8 @@ public:
 	void toFile(std::ofstream &file);
 
 	Court * createCourt();
+	Court * createCourtConvex();
+	Court * createCourtConcave();
 };
 
 #endif

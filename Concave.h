@@ -4,7 +4,7 @@
 #include <map>
 #include "Point.h"
 
-enum Direction{NORTH, EAST, SOUTH, WEST};
+enum Direction{NORTH, EAST, SOUTH, WEST, NUM_DIRECTIONS};
 
 class Concave{
 private:

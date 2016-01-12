@@ -8,16 +8,18 @@ map<Direction, int> City::polarityOf = City::createPolarityOf();
 map<Direction, Axis> City::axisOf = City::createAxisOf();
 
 City::City(){
-	this->maxE = STARTX;
-	this->maxS = STARTY;
-	this->maxW = STARTX;
-	this->maxN = STARTY;
+	this->maxCoords[EAST] = this->maxCoords[WEST] = STARTX;
+	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
 
 	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4));
+	this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4));
+	/*
 	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33));
 	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38));
 	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42));
 	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41));
+	*/
+	this->updatePerimeter();
 }
 
 City::~City(){
@@ -47,6 +49,12 @@ unsigned int City::absolute(int num){
 	if (num < 0)
 		return num * (-1);
 	return num;
+}
+
+void City::swap(unsigned int &num1, unsigned int &num2){
+	unsigned int temp = num1;
+	num1 = num2;
+	num2 = temp;
 }
 
 void City::toFile(ofstream &file){
@@ -106,56 +114,103 @@ void City::insertCourt(Court * court){
 	unsigned int courtwe = court->getEdge(WEST);
 	unsigned int courtno = court->getEdge(NORTH);
 
-	if(courtea > this->maxE)
-		this->maxE = courtea;
-	if(courtso > this->maxS)
-		this->maxS = courtso;
-	if(courtwe < this->maxW)
-		this->maxW = courtwe;
-	if(courtno < this->maxN)
-		this->maxN = courtno;
+	if(courtea > this->maxCoords[EAST])
+		this->maxCoords[EAST] = courtea;
+	if(courtso > this->maxCoords[SOUTH])
+		this->maxCoords[SOUTH] = courtso;
+	if(courtwe < this->maxCoords[WEST])
+		this->maxCoords[WEST] = courtwe;
+	if(courtno < this->maxCoords[NORTH])
+		this->maxCoords[NORTH] = courtno;
 }
 
 /*
  * Create a new court somewhere random in this city
  */
 Court * City::createCourt(){
+	Court * newCourt;
+	if(this->concaves.size() == 0)
+		newCourt = this->createCourtConvex();
+	else
+		newCourt = this->createCourtConcave();
+
 	this->updatePerimeter();
+	return newCourt;
+}
+
+/*
+ * Create a new court somewhere outside the current perimeter of this city
+ */
+Court * City::createCourtConvex(){
 	Court * newCourt = NULL;
 
-	unsigned int noConcaves = this->concaves.size();
+	// Choose a side at random to add the new court on, and which direction from that the new court should fan
+	Direction side = (Direction) City::ran(0, NUM_DIRECTIONS-1);
+	Axis primaryAxis = City::axisOf[side];
+	int primaryPolarity = City::polarityOf[side];
+	int crossPolarity = POLARITY_POSITIVE;
+	if(City::ran(0, 1))
+		crossPolarity = POLARITY_NEGATIVE;
 
-	if(noConcaves > 0){
-		Concave * concave = this->concaves[City::ran(0, noConcaves-1)]; // TODO:
+	// Determine cross boundaries
+	unsigned int crossBound1, crossBound2;
+	crossBound1 = this->maxCoords[City::leftOf[side]];
+	crossBound2 = this->maxCoords[City::rightOf[side]];
+	if(crossBound2 < crossBound1)
+		swap(crossBound1, crossBound2);
 
-		Direction rightEdge = concave->getRightEdge();
-		Axis rightAxis = City::axisOf[rightEdge];
-		int rightPolarity = City::polarityOf[rightEdge];
+	// Determine the first coordinates of the new court
+	unsigned int primaryAxisCoord1, crossAxisCoord1, primaryAxisCoord2, crossAxisCoord2;
+	primaryAxisCoord1 = this->maxCoords[side] + (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * primaryPolarity);
+	crossAxisCoord1 = City::ran(crossBound1, crossBound2);
 
-		Direction lowerEdge = City::leftOf[rightEdge];
-		Axis lowerAxis = (rightAxis == XAXIS) ? YAXIS : XAXIS;
-		int lowerPolarity = City::polarityOf[lowerEdge];
+	// Determine the other coordinates
+	primaryAxisCoord2 = primaryAxisCoord1 + (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * primaryPolarity);
+	unsigned int firstDim = City::absolute(primaryAxisCoord2 - primaryAxisCoord1);
+	crossAxisCoord2 = crossAxisCoord1 + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * crossPolarity);
 
-		unsigned int concaveRightDim = concave->getCoord(rightAxis);
-		unsigned int concaveLowerDim = concave->getCoord(lowerAxis);
+	newCourt = new Court(primaryAxis, primaryAxisCoord1, primaryAxisCoord2, crossAxisCoord1, crossAxisCoord2);
+	this->insertCourt(newCourt);
 
-		unsigned int newRightDim, newLowerDim, newLeftDim, newUpperDim;
+	return newCourt;
+}
 
-		// Get starting point of new court
-		newRightDim = concaveRightDim - (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * rightPolarity);
-		if(City::absolute(concaveRightDim - newRightDim) > BUILDING_DEPTH_MIN)
-			newLowerDim = concaveLowerDim + (BUILDING_DEPTH_MIN * lowerPolarity);
-		else
-			newLowerDim = concaveLowerDim + (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * lowerPolarity);
+/*
+ * Create a new court at a random concave point in this city
+ */
+Court * City::createCourtConcave(){
+	Court * newCourt = NULL;
 
-		// Get other edges of new court
-		newLeftDim = newRightDim - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
-		unsigned int firstDim = City::absolute(newRightDim - newLeftDim);
-		newUpperDim = newLowerDim + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+	// Choose a concave point at random to add the new court at
+	Concave * concave = this->concaves[City::ran(0, this->concaves.size()-1)];
 
-		newCourt = new Court(rightAxis, newRightDim, newLeftDim, newLowerDim, newUpperDim);
-		this->insertCourt(newCourt);
-	}
+	Direction rightEdge = concave->getRightEdge();
+	Axis rightAxis = City::axisOf[rightEdge];
+	int rightPolarity = City::polarityOf[rightEdge];
+
+	Direction lowerEdge = City::leftOf[rightEdge];
+	Axis lowerAxis = (rightAxis == XAXIS) ? YAXIS : XAXIS;
+	int lowerPolarity = City::polarityOf[lowerEdge];
+
+	unsigned int concaveRightDim = concave->getCoord(rightAxis);
+	unsigned int concaveLowerDim = concave->getCoord(lowerAxis);
+
+	unsigned int newRightCoord, newLowerCoord, newLeftCoord, newUpperCoord;
+
+	// Get starting point of new court
+	newRightCoord = concaveRightDim - (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * rightPolarity);
+	if(City::absolute(concaveRightDim - newRightCoord) > BUILDING_DEPTH_MIN)
+		newLowerCoord = concaveLowerDim + (BUILDING_DEPTH_MIN * lowerPolarity);
+	else
+		newLowerCoord = concaveLowerDim + (City::ran(BUILDING_DEPTH_MIN, BUILDING_DEPTH_MAX) * lowerPolarity);
+
+	// Get other edges of new court
+	newLeftCoord = newRightCoord - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
+	unsigned int firstDim = City::absolute(newRightCoord - newLeftCoord);
+	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+
+	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord);
+	this->insertCourt(newCourt);
 
 	return newCourt;
 }
@@ -197,6 +252,7 @@ void City::updatePerimeter(){
 			case SOUTH: cout << "SOUTH"; break;
 			case WEST: cout << "WEST"; break;
 			case NORTH: cout << "NORTH"; break;
+			default: break;
 		}
 		cout << endl;
 
@@ -285,7 +341,7 @@ Court * City::getStartingCourt(){
 	Court * result = NULL;
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * court = (*it);
-		if(court->getEdge(NORTH) == this->maxN){
+		if(court->getEdge(NORTH) == this->maxCoords[NORTH]){
 			unsigned int left = court->getEdge(WEST);
 			if(left < ver){
 				ver = left;
