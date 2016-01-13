@@ -392,14 +392,18 @@ Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, u
 
 /*
  * Return the court that the perimeter calculation should be started at
- * FIXME: we will eventually want the westmost one of these, in case several border the northernmost line
  */
 Court * City::getStartingCourt(){
+	unsigned int vert = MAX_X;
 	Court * result = NULL;
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * court = (*it);
 		if(court->getEdge(NORTH) == this->maxCoords[NORTH]){
-			return court;
+			unsigned int west = court->getEdge(WEST);
+			if(west < vert){ // we want the westmost one of these, in case several border the northernmost line
+				vert = west;
+				result = court;
+			}
 		}
 	}
 

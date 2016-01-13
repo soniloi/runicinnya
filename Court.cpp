@@ -60,26 +60,26 @@ unsigned int Court::getIndex(){
  * Return whether a given point lies on the perimeter of this court
  * FIXME: refactor
  */
-bool Court::hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2){
+bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	unsigned int east = this->edges[EAST];
 	unsigned int south = this->edges[SOUTH];
 	unsigned int west = this->edges[WEST];
 	unsigned int north = this->edges[NORTH];
-	if(normalAxis == XAXIS){
-		if (val1 == east || val1 == west){
-			return (val2 <= south && val2 >= north);
+	if(primaryAxis == XAXIS){
+		if (primaryCoord == east || primaryCoord == west){
+			return (crossCoord <= south && crossCoord >= north);
 		}
-		else if (val2 == south || val2 == north){
-			return (val1 <= east && val1 >= west);
+		else if (crossCoord == south || crossCoord == north){
+			return (primaryCoord <= east && primaryCoord >= west);
 		}
 		return false;
 	}
 	else{
-		if (val1 == south || val1 == north){
-			return (val2 <= east && val2 >= west);
+		if (primaryCoord == south || primaryCoord == north){
+			return (crossCoord <= east && crossCoord >= west);
 		}
-		else if (val2 == east || val2 == west){
-			return (val1 <= south && val1 >= north);
+		else if (crossCoord == east || crossCoord == west){
+			return (primaryCoord <= south && primaryCoord >= north);
 		}
 		return false;
 	}

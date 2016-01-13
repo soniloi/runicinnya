@@ -32,7 +32,7 @@ public:
 	unsigned int getEdge(Direction dir);
 	unsigned int getIndex(); // FIXME:
 
-	bool hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2); // FIXME: rename consistently
+	bool hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	bool containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	static unsigned int getMinSecondDimension(unsigned int first);
 	static unsigned int getMaxSecondDimension(unsigned int first);

@@ -4,7 +4,7 @@ Point::Point(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoor
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
 	this->coords[primaryAxis] = primaryCoord;
 	this->coords[crossAxis] = crossCoord;
-	//std::cout << "a1: " << a1 << " val1: " << val1 << " a2: " << " val2: " << val2 << std::endl;
+	//std::cout << "primaryAxis: " << primaryAxis << " primaryCoord: " << primaryCoord << " crossCoord: " << crossCoord << std::endl;
 }
 
 unsigned int Point::getCoord(Axis a){
