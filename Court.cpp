@@ -52,6 +52,10 @@ unsigned int Court::getEdge(Direction dir){
 	return this->edges[dir];
 }
 
+unsigned int Court::getIndex(){
+	return this->index;
+}
+
 /*
  * Return whether a given point lies on the perimeter of this court
  * FIXME: refactor

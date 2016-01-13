@@ -119,19 +119,6 @@ void City::generate(unsigned int noCourts){
 	for(int i = 1; i < noCourts; ++i){
 		this->createCourt();
 		this->updatePerimeter();
-
-		if(this->courts.size() > 0 && this->perimeter.size() < 5){ // Somehow, no points have been added; error
-			cout << "Max EAST: " << this->maxCoords[EAST] << endl;
-			cout << "Max SOUTH: " << this->maxCoords[SOUTH] << endl;
-			cout << "Max WEST: " << this->maxCoords[WEST] << endl;
-			cout << "Max NORTH: " << this->maxCoords[NORTH] << endl;
-
-			cout << "first court EAST: " << this->courts.front()->getEdge(EAST) << endl;
-			cout << "first court SOUTH: " << this->courts.front()->getEdge(SOUTH) << endl;
-			cout << "first court WEST: " << this->courts.front()->getEdge(WEST) << endl;
-			cout << "first court NORTH: " << this->courts.front()->getEdge(NORTH) << endl;
-		}
-
 	}
 }
 
@@ -288,8 +275,10 @@ void City::updatePerimeter(){
 	this->clearPerimeterAndConcaves();
 
 	Court * currCourt = this->getStartingCourt();
-	if(!currCourt)
+	if(!currCourt){
 		cout << "No starting point; error" << endl;
+		return;
+	}
 
 	int startX = currCourt->getEdge(WEST);
 	int startY = currCourt->getEdge(NORTH);
@@ -313,7 +302,7 @@ void City::updatePerimeter(){
 		cout << endl;
 */
 		currCourt = this->travelClockwise(currCourt, currPoint, currDir);
-	} while (!currPoint->equals(startingPoint));
+	} while (currPoint == startingPoint || !currPoint->equals(startingPoint));
 
 }
 
@@ -403,6 +392,7 @@ Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, u
 
 /*
  * Return the court that the perimeter calculation should be started at
+ * FIXME: we will eventually want the westmost one of these, in case several border the northernmost line
  */
 Court * City::getStartingCourt(){
 	Court * result = NULL;

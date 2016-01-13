@@ -30,6 +30,7 @@ public:
 	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind); // FIXME: rename consistently
 	~Court();
 	unsigned int getEdge(Direction dir);
+	unsigned int getIndex(); // FIXME:
 
 	bool hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2); // FIXME: rename consistently
 	bool containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
