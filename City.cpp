@@ -240,11 +240,20 @@ Court * City::createCourtConcave(){
 
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
 	Court * containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
-	if(containingCourt){
-		cout << "Collision detected" << endl;
-		// amend newLeftCoord so as not to clash with containingCourt
-		// TODO:
+	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
+		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
+		cout << "\tnewRightCoord: " << newRightCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
+					 << ", " << containingCourt->getEdge(SOUTH) << ", " << containingCourt->getEdge(WEST) <<", " << containingCourt->getEdge(NORTH) << "}" << endl;
+
+		//cout << "\tInsertion point (concave): (" << concaveRightDim << "," << concaveLowerDim << ")" << endl;
+		newLeftCoord += (1 * rightPolarity);
+		cout << "\tresetting newLeftCoord to " << newLeftCoord << endl;
+
+		containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
 	}
+
+	if(newLeftCoord == newRightCoord)
+		newRightCoord += BUILDING_DEPTH_MIN * rightPolarity; // This should be safe, as it will only arise where we went too far out in the first place
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
@@ -289,6 +298,7 @@ void City::updatePerimeter(){
 
 	this->perimeter.push_back(startingPoint); // FIXME: possibly should not add, only use to compare against
 
+	int iterations = 0;
 	do {
 		/*
 		cout << "Travelling: ";
@@ -301,8 +311,10 @@ void City::updatePerimeter(){
 		}
 		cout << endl;
 */
+		//cout << "traversing perimeter" << endl;
 		currCourt = this->travelClockwise(currCourt, currPoint, currDir);
-	} while (currPoint == startingPoint || !currPoint->equals(startingPoint));
+		iterations++;
+	} while ((currPoint == startingPoint || !currPoint->equals(startingPoint)) && iterations < 1000);
 
 }
 
