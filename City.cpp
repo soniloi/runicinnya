@@ -11,15 +11,16 @@ map<Direction, Axis> City::axisOf = City::createAxisOf();
 City::City(){
 	this->maxCoords[EAST] = this->maxCoords[WEST] = STARTX;
 	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
+	this->courtCount = 0;
 
 /*
-	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4));
-	//this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4));
+	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4, this->courtCount++));
+	//this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4, this->courtCount++));
 	
-	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33));
-	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38));
-	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42));
-	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41));
+	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33, this->courtCount++));
+	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38, this->courtCount++));
+	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42, this->courtCount++));
+	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41, this->courtCount++));
 	
 	this->updatePerimeter();
 */
@@ -67,8 +68,10 @@ void City::toFile(ofstream &file){
 	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"" << (WIDTH * SCALE_FACTOR) << "\" height=\"" << (HEIGHT * SCALE_FACTOR) << "\" style=\"background: " << BG_COLOUR << "\">" << endl;
 
 	// Content (courtyards)
+	int count = 0;
 	for (auto it = this->courts.begin(); it != this->courts.end(); it++){
 		(*it)->toFile(file);
+		count++;
 	}
 
 	// Perimeter
@@ -111,10 +114,24 @@ void City::generate(unsigned int noCourts){
 		return;
 
 	this->createInitialCourt();
+	this->updatePerimeter();
 
 	for(int i = 1; i < noCourts; ++i){
 		this->createCourt();
 		this->updatePerimeter();
+
+		if(this->courts.size() > 0 && this->perimeter.size() < 5){ // Somehow, no points have been added; error
+			cout << "Max EAST: " << this->maxCoords[EAST] << endl;
+			cout << "Max SOUTH: " << this->maxCoords[SOUTH] << endl;
+			cout << "Max WEST: " << this->maxCoords[WEST] << endl;
+			cout << "Max NORTH: " << this->maxCoords[NORTH] << endl;
+
+			cout << "first court EAST: " << this->courts.front()->getEdge(EAST) << endl;
+			cout << "first court SOUTH: " << this->courts.front()->getEdge(SOUTH) << endl;
+			cout << "first court WEST: " << this->courts.front()->getEdge(WEST) << endl;
+			cout << "first court NORTH: " << this->courts.front()->getEdge(NORTH) << endl;
+		}
+
 	}
 }
 
@@ -195,7 +212,7 @@ Court * City::createCourtConvex(){
 	unsigned int firstDim = City::absolute(primaryAxisCoord2 - primaryAxisCoord1);
 	crossAxisCoord2 = crossAxisCoord1 + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * crossPolarity);
 
-	newCourt = new Court(primaryAxis, primaryAxisCoord1, primaryAxisCoord2, crossAxisCoord1, crossAxisCoord2);
+	newCourt = new Court(primaryAxis, primaryAxisCoord1, primaryAxisCoord2, crossAxisCoord1, crossAxisCoord2, this->courtCount++);
 	this->insertCourt(newCourt);
 
 	return newCourt;
@@ -244,7 +261,7 @@ Court * City::createCourtConcave(){
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
-	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord);
+	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
 	this->insertCourt(newCourt);
 
 	return newCourt;
@@ -272,7 +289,7 @@ void City::updatePerimeter(){
 
 	Court * currCourt = this->getStartingCourt();
 	if(!currCourt)
-		return;
+		cout << "No starting point; error" << endl;
 
 	int startX = currCourt->getEdge(WEST);
 	int startY = currCourt->getEdge(NORTH);
@@ -388,16 +405,11 @@ Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, u
  * Return the court that the perimeter calculation should be started at
  */
 Court * City::getStartingCourt(){
-	unsigned int ver = MAX_X;
 	Court * result = NULL;
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * court = (*it);
 		if(court->getEdge(NORTH) == this->maxCoords[NORTH]){
-			unsigned int left = court->getEdge(WEST);
-			if(left < ver){
-				ver = left;
-				result = court;
-			}
+			return court;
 		}
 	}
 

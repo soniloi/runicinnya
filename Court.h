@@ -24,9 +24,10 @@
 class Court {
 private:
 	std::map<Direction, unsigned int> edges; // FIXME: consider refactoring to store internally as axis-point mapping instead of direction-dimension
+	unsigned int index; // FIXME: probably remove once debugged
 
 public:
-	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2); // FIXME: rename consistently
+	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind); // FIXME: rename consistently
 	~Court();
 	unsigned int getEdge(Direction dir);
 

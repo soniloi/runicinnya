@@ -26,6 +26,7 @@ private:
 	std::list<Court *> courts; // All courtyards making up this city
 	// This map gets updated on every Court insert; just test whether the Court being inserted expands these boundaries
 	std::map<Direction, unsigned int> maxCoords;
+	unsigned int courtCount; // FIXME: probably remove once debugged
 
 	std::vector<Point *> perimeter; // FIXME: use list instead?
 	std::vector<Concave *> concaves;

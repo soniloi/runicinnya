@@ -4,7 +4,7 @@
  * Constructor
  * FIXME: refactor
  */
-Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2){
+Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind){
 	if(primaryAxis == YAXIS){
 		if(primary1 > primary2){
 			this->edges[SOUTH] = primary1;
@@ -41,6 +41,7 @@ Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, uns
 			this->edges[NORTH] = cross1;
 		}
 	}
+	this->index = ind;
 	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
 }
 
@@ -122,4 +123,5 @@ void Court::toFile(std::ostream &file){
 	int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
 
 	file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << COURT_STYLE << "\"/>" << std::endl;
+	file << "<text x=\"" << xcoord << "\" y=\"" << ycoord << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << this->index << "</text>" << std::endl;
 }
