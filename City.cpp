@@ -232,6 +232,14 @@ Court * City::createCourtConcave(){
 	// Get other edges of new court
 	newLeftCoord = newRightCoord - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
 	unsigned int firstDim = City::absolute(newRightCoord - newLeftCoord);
+
+	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
+	Court * containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
+	if(containingCourt){
+		// amend newLeftCoord so as not to clash with containingCourt
+		// TODO:
+	}
+
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
 	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord);
@@ -359,6 +367,14 @@ Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange,
 		}
 	}
 
+	return NULL;
+}
+
+/*
+ * Find a court that overlaps this point, i.e. that this point is within the perimeter (+ min building width) of
+ */
+Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
+	// TODO:
 	return NULL;
 }
 
