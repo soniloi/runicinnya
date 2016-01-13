@@ -4,6 +4,7 @@ using namespace std;
 
 map<Direction, Direction> City::leftOf = City::createLeftOf();
 map<Direction, Direction> City::rightOf = City::createRightOf();
+map<Direction, Direction> City::oppositeOf = City::createOppositeOf();
 map<Direction, int> City::polarityOf = City::createPolarityOf();
 map<Direction, Axis> City::axisOf = City::createAxisOf();
 
@@ -236,6 +237,7 @@ Court * City::createCourtConcave(){
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
 	Court * containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
 	if(containingCourt){
+		cout << "Collision detected" << endl;
 		// amend newLeftCoord so as not to clash with containingCourt
 		// TODO:
 	}
@@ -374,7 +376,11 @@ Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange,
  * Find a court that overlaps this point, i.e. that this point is within the perimeter (+ min building width) of
  */
 Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	// TODO:
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		if((*it)->containsPoint(primaryAxis, primaryCoord, crossCoord))
+			return (*it);
+	}
+
 	return NULL;
 }
 

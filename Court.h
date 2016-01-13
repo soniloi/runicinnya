@@ -23,14 +23,15 @@
 
 class Court {
 private:
-	std::map<Direction, unsigned int> edges;
+	std::map<Direction, unsigned int> edges; // FIXME: consider refactoring to store internally as axis-point mapping instead of direction-dimension
 
 public:
-	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2);
+	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2); // FIXME: rename consistently
 	~Court();
 	unsigned int getEdge(Direction dir);
 
-	bool hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2);
+	bool hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2); // FIXME: rename consistently
+	bool containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	static unsigned int getMinSecondDimension(unsigned int first);
 	static unsigned int getMaxSecondDimension(unsigned int first);
 

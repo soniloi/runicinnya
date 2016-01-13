@@ -47,6 +47,7 @@ private:
 	Court * createCourtConvex();
 	Court * createCourtConcave();
 
+	static std::map<Direction, Direction> leftOf;
 	static std::map<Direction, Direction> createLeftOf(){
 		std::map<Direction, Direction> m;
 		m[EAST] = NORTH;
@@ -55,8 +56,8 @@ private:
 		m[NORTH] = WEST;
 		return m;
 	}
-	static std::map<Direction, Direction> leftOf;
 
+	static std::map<Direction, Direction> rightOf;
 	static std::map<Direction, Direction> createRightOf(){
 		std::map<Direction, Direction> m;
 		m[EAST] = SOUTH;
@@ -65,8 +66,18 @@ private:
 		m[NORTH] = EAST;
 		return m;
 	}
-	static std::map<Direction, Direction> rightOf;
 
+	static std::map<Direction, Direction> oppositeOf;
+	static std::map<Direction, Direction> createOppositeOf(){
+		std::map<Direction, Direction> m;
+		m[EAST] = WEST;
+		m[SOUTH] = NORTH;
+		m[WEST] = EAST;
+		m[NORTH] = SOUTH;
+		return m;
+	}
+
+	static std::map<Direction, int> polarityOf;
 	static std::map<Direction, int> createPolarityOf(){
 		std::map<Direction, int> m;
 		m[EAST] = POLARITY_POSITIVE;
@@ -75,8 +86,8 @@ private:
 		m[NORTH] = POLARITY_NEGATIVE;
 		return m;
 	}
-	static std::map<Direction, int> polarityOf;
 
+	static std::map<Direction, Axis> axisOf;
 	static std::map<Direction, Axis> createAxisOf(){
 		std::map<Direction, Axis> m;
 		m[EAST] = XAXIS;
@@ -85,7 +96,6 @@ private:
 		m[NORTH] = YAXIS;
 		return m;
 	}
-	static std::map<Direction, Axis> axisOf;
 
 public:
 	City();

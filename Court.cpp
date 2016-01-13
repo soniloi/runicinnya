@@ -81,6 +81,18 @@ bool Court::hasOnPerimeter(Axis normalAxis, unsigned int val1, unsigned int val2
 }
 
 /*
+ * Return whether a given point lies within or on the perimeter of this court
+ */
+bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
+	if(primaryAxis == XAXIS){
+		return ((primaryCoord >= this->edges[WEST] && primaryCoord <= this->edges[EAST]) &&
+				(crossCoord >= this->edges[NORTH] && crossCoord <= this->edges[SOUTH]));
+	}
+	return ((primaryCoord >= this->edges[NORTH] && primaryCoord <= this->edges[SOUTH]) &&
+			(crossCoord >= this->edges[WEST] && crossCoord <= this->edges[EAST]));
+}
+
+/*
  * Return the minimum a court dimension can be, based on the other one
  */
 unsigned int Court::getMinSecondDimension(unsigned int first){
