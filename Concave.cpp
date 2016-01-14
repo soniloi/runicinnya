@@ -14,3 +14,9 @@ unsigned int Concave::getCoord(Axis a){
 Direction Concave::getRightEdge(){
 	return this->rightEdge;
 }
+
+std::string Concave::toString(){
+	std::stringstream ss;
+	ss << "(" << this->coords[XAXIS] << ", " << this->coords[YAXIS] << ") " << this->rightEdge;
+	return ss.str();
+}

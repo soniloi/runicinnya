@@ -127,5 +127,5 @@ void Court::toFile(std::ostream &file){
 	int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
 
 	file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << COURT_STYLE << "\"/>" << std::endl;
-	file << "<text x=\"" << xcoord << "\" y=\"" << ycoord << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << this->index << "</text>" << std::endl;
+	file << "<text x=\"" << xcoord << "\" y=\"" << (ycoord-2) << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << this->index << "</text>" << std::endl;
 }

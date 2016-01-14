@@ -67,6 +67,23 @@ void City::toFile(ofstream &file){
 	file << "<?xml version=\"1.0\"?>" << endl;
 	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"" << (WIDTH * SCALE_FACTOR) << "\" height=\"" << (HEIGHT * SCALE_FACTOR) << "\" style=\"background: " << BG_COLOUR << "\">" << endl;
 
+	// Grid
+	for(int i = 0; i < (MAX_Y * SCALE_FACTOR); i+=SCALE_FACTOR){
+		file << "<line x1=\"" << 0 << "\" y1=\"" << i << "\" x2=\"" << (MAX_X * SCALE_FACTOR) << "\" y2=\"" << i << "\" style=\"stroke:rgb(192,224,255);stroke-width:0.25\" />" << endl;
+	}
+	for(int i = 0; i < (MAX_Y * SCALE_FACTOR); i+=(SCALE_FACTOR*10)){
+		file << "<line x1=\"" << 0 << "\" y1=\"" << i << "\" x2=\"" << (MAX_X * SCALE_FACTOR) << "\" y2=\"" << i << "\" style=\"stroke:rgb(192,224,255);stroke-width:1\" />" << endl;
+		file << "<text x=\"" << 1180 << "\" y=\"" << (i-8) << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
+	}
+
+	for(int i = 0; i < (MAX_X * SCALE_FACTOR); i+=SCALE_FACTOR){
+		file << "<line x1=\"" << i << "\" y1=\"" << 0 << "\" x2=\"" << i << "\" y2=\"" << (MAX_Y * SCALE_FACTOR) << "\" style=\"stroke:rgb(192,224,255);stroke-width:0.25\" />" << endl;
+	}
+	for(int i = 0; i < (MAX_X * SCALE_FACTOR); i+=(SCALE_FACTOR*10)){
+		file << "<line x1=\"" << i << "\" y1=\"" << 0 << "\" x2=\"" << i << "\" y2=\"" << (MAX_Y * SCALE_FACTOR) << "\" style=\"stroke:rgb(192,224,255);stroke-width:1\" />" << endl;
+		file << "<text x=\"" << (i+8) << "\" y=\"" << 392 << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
+	}
+
 	// Content (courtyards)
 	int count = 0;
 	for (auto it = this->courts.begin(); it != this->courts.end(); it++){
@@ -113,11 +130,15 @@ void City::generate(unsigned int noCourts){
 	if(noCourts == 0)
 		return;
 
-	this->createInitialCourt();
+	Court * nextCourt;
+
+	nextCourt = this->createInitialCourt();
+	this->insertCourt(nextCourt);
 	this->updatePerimeter();
 
 	for(int i = 1; i < noCourts; ++i){
-		this->createCourt();
+		nextCourt = this->createCourt();
+		this->insertCourt(nextCourt);
 		this->updatePerimeter();
 	}
 }
@@ -164,7 +185,6 @@ Court * City::createCourt(){
 		newCourt = this->createCourtConvex();
 	else
 		newCourt = this->createCourtConcave();
-
 	return newCourt;
 }
 
@@ -200,7 +220,6 @@ Court * City::createCourtConvex(){
 	crossAxisCoord2 = crossAxisCoord1 + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * crossPolarity);
 
 	newCourt = new Court(primaryAxis, primaryAxisCoord1, primaryAxisCoord2, crossAxisCoord1, crossAxisCoord2, this->courtCount++);
-	this->insertCourt(newCourt);
 
 	return newCourt;
 }
@@ -213,6 +232,7 @@ Court * City::createCourtConcave(){
 
 	// Choose a concave point at random to add the new court at
 	Concave * concave = this->concaves[City::ran(0, this->concaves.size()-1)];
+	cout << "### Inserting court #" << this->courtCount << " at concave: " << concave->toString() << endl;
 
 	Direction rightEdge = concave->getRightEdge();
 	Axis rightAxis = City::axisOf[rightEdge];
@@ -253,12 +273,11 @@ Court * City::createCourtConcave(){
 	}
 
 	if(newLeftCoord == newRightCoord)
-		newRightCoord += BUILDING_DEPTH_MIN * rightPolarity; // This should be safe, as it will only arise where we went too far out in the first place
+		newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
 	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
-	this->insertCourt(newCourt);
 
 	return newCourt;
 }
