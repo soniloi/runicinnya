@@ -43,6 +43,7 @@ unsigned int City::ran(int from, int to){
 	static bool seed_set = false;
 	if(!seed_set){
 		rng.seed(time(NULL));
+		//rng.seed(117);
 		seed_set = true;
 	}
 	std::uniform_int_distribution<uint32_t> dist(from, to);
@@ -262,7 +263,7 @@ Court * City::createCourtConcave(){
 	Court * containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
 		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
-		cout << "\tnewRightCoord: " << newRightCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
+		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
 					 << ", " << containingCourt->getEdge(SOUTH) << ", " << containingCourt->getEdge(WEST) <<", " << containingCourt->getEdge(NORTH) << "}" << endl;
 
 		//cout << "\tInsertion point (concave): (" << concaveRightDim << "," << concaveLowerDim << ")" << endl;
@@ -278,6 +279,7 @@ Court * City::createCourtConcave(){
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
 	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
+	cout << "\tnewcourt newUpperCoord = " << newUpperCoord << endl;
 
 	return newCourt;
 }
@@ -315,9 +317,9 @@ void City::updatePerimeter(){
 	Point * startingPoint = new Point(XAXIS, startX, startY);
 	Point * currPoint = startingPoint;
 
-	this->perimeter.push_back(startingPoint); // FIXME: possibly should not add, only use to compare against
+	this->perimeter.push_back(startingPoint);
 
-	int iterations = 0;
+	int iterations = 0; // FIXME: this to come out when overlap issues fixed
 	do {
 		/*
 		cout << "Travelling: ";
@@ -356,7 +358,9 @@ Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &
 	unsigned int match;
 	Court * provCourt;
 
-	while(dimToChange != lastPoint){
+	// Check just a little bit beyond the end in this direction, in case there are any on the left there
+	unsigned int pastLastPoint = lastPoint + (BUILDING_DEPTH_MAX * polarity);
+	while(dimToChange != pastLastPoint){
 		dimToChange += 1 * (polarity);
 		provCourt = this->findNeighbouringCourt(currCourt, dimToStay, dimToChange, perpendicularAxis, leftPolarity, match);
 		if(provCourt){
@@ -367,6 +371,9 @@ Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &
 			return provCourt;
 		}
 	}
+
+	// There are none beyond, so go around the corner instead
+	dimToChange = lastPoint;
 
 	provCourt = this->findNeighbouringCourt(currCourt, dimToChange, dimToStay, currAxis, polarity, match);
 	if(provCourt){
