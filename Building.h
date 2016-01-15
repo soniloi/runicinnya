@@ -10,7 +10,7 @@
 #include "Court.h" // FIXME: sort this out
 
 
-#define BUILDING_STYLE "fill:rgb(192,255,255);stroke-width:1;stroke:rgb(0,0,0)"
+#define BUILDING_STYLE "fill:rgb(208,224,255);stroke-width:1;stroke:rgb(0,0,0)"
 
 class Building {
 private:
