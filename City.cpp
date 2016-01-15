@@ -85,7 +85,12 @@ void City::toFile(ofstream &file){
 		file << "<text x=\"" << (i+8) << "\" y=\"" << 392 << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
 	}
 
-	// Content (courtyards)
+	// Buildings
+	for (auto it = this->buildings.begin(); it != this->buildings.end(); it++){
+		(*it)->toFile(file);
+	}
+
+	// Courtyards
 	int count = 0;
 	for (auto it = this->courts.begin(); it != this->courts.end(); it++){
 		(*it)->toFile(file);
@@ -142,6 +147,10 @@ void City::generate(unsigned int noCourts){
 		this->insertCourt(nextCourt);
 		this->updatePerimeter();
 	}
+
+	// TODO: this should instead be detectBuildings() or computeBuildings() or something, determined based on where courts have been placed
+	this->buildings.push_back(new Building(XAXIS, 87, 45, 1, 1));
+	this->buildings.push_back(new Building(YAXIS, 44, 92, 2, 7));
 }
 
 /*
@@ -259,8 +268,12 @@ Court * City::createCourtConcave(){
 	newLeftCoord = newRightCoord - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
 	unsigned int firstDim = City::absolute(newRightCoord - newLeftCoord);
 
+	Court * containingCourt = NULL;
+
+	// FIXME: checking only the far corner is not enough; what if the far corner is clear of any courts overlapped?
+
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
-	Court * containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
+	containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
 		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
 		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
@@ -278,7 +291,6 @@ Court * City::createCourtConcave(){
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 
-	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
 	containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
 		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
