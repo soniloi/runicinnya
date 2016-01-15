@@ -10,16 +10,21 @@
 #include "Concave.h"
 #include "Point.h"
 
-#define COURT_STYLE "fill:rgb(255,128,255);stroke-width:1;stroke:rgb(0,0,0)"
+#define COURT_STYLE "fill:rgb(224,192,255);stroke-width:1;stroke:rgb(0,0,0)"
+#define GRID_STYLE "stroke:rgb(96,96,96);stroke-width:0.125"
 #define COURT_DIM_MAX 5
 #define COURT_DIM_MIN 1
 #define MAX_RATIO 3
 #define RSEED 717
-#define SCALE_FACTOR 10
+#define SCALE_FACTOR 20
 #define BUILDING_DEPTH_MIN 1
 #define BUILDING_DEPTH_MAX 2
 #define MAX_X 180
 #define MAX_Y 80
+
+#define COURT_GRID_INTERVAL 0.25
+#define COURT_COLUMN_INTERVAL 0.25
+#define COURT_COLUMN_OFFSET COURT_GRID_INTERVAL
 
 class Court {
 private:

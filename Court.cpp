@@ -126,6 +126,17 @@ void Court::toFile(std::ostream &file){
 	int width = (this->edges[EAST] - this->edges[WEST]) * SCALE_FACTOR;
 	int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
 
+	// Outline and fill
 	file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << COURT_STYLE << "\"/>" << std::endl;
+
+	// Grid
+    for(int i = (xcoord+COURT_GRID_INTERVAL*SCALE_FACTOR); i < (xcoord+width); i += (COURT_GRID_INTERVAL*SCALE_FACTOR)){ // Vertical lines
+        file << "<line x1=\"" << i << "\" y1=\"" << ycoord << "\" x2=\"" << i << "\" y2=\"" << (ycoord+height) << "\" style=\"" << GRID_STYLE << "\" />" << std::endl;
+    }
+	for(int i = (ycoord+COURT_GRID_INTERVAL*SCALE_FACTOR); i < (ycoord+height); i += (COURT_GRID_INTERVAL*SCALE_FACTOR)){
+        file << "<line x1=\"" << xcoord << "\" y1=\"" << i << "\" x2=\"" << (xcoord+width) << "\" y2=\"" << i << "\" style=\"" << GRID_STYLE << "\" />" << std::endl;
+	}
+
+	// Label
 	file << "<text x=\"" << xcoord << "\" y=\"" << (ycoord-2) << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << this->index << "</text>" << std::endl;
 }
