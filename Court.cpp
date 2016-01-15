@@ -121,10 +121,17 @@ unsigned int Court::getMaxSecondDimension(unsigned int first){
  * Output this court to svg as a rect
  */
 void Court::toFile(std::ostream &file){
-	int xcoord = this->edges[WEST] * SCALE_FACTOR;
-	int ycoord = this->edges[NORTH] * SCALE_FACTOR;
-	int width = (this->edges[EAST] - this->edges[WEST]) * SCALE_FACTOR;
-	int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
+	unsigned int xcoord = this->edges[WEST] * SCALE_FACTOR;
+	unsigned int ycoord = this->edges[NORTH] * SCALE_FACTOR;
+	unsigned int width = (this->edges[EAST] - this->edges[WEST]) * SCALE_FACTOR;
+	unsigned int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
+
+	unsigned int halfcolumn = (COURT_COLUMN_SIZE / 2) * SCALE_FACTOR;
+	unsigned int fullcolumn = COURT_COLUMN_SIZE * SCALE_FACTOR;
+	unsigned int columnupper = ycoord + (COURT_COLUMN_OFFSET * SCALE_FACTOR);
+	unsigned int columnlower = ycoord + height - (COURT_COLUMN_OFFSET * SCALE_FACTOR);
+	unsigned int columnleft = xcoord + (COURT_COLUMN_OFFSET * SCALE_FACTOR);
+	unsigned int columnright = xcoord + width - (COURT_COLUMN_OFFSET * SCALE_FACTOR);
 
 	// Outline and fill
 	file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << COURT_STYLE << "\"/>" << std::endl;
@@ -133,8 +140,18 @@ void Court::toFile(std::ostream &file){
     for(int i = (xcoord+COURT_GRID_INTERVAL*SCALE_FACTOR); i < (xcoord+width); i += (COURT_GRID_INTERVAL*SCALE_FACTOR)){ // Vertical lines
         file << "<line x1=\"" << i << "\" y1=\"" << ycoord << "\" x2=\"" << i << "\" y2=\"" << (ycoord+height) << "\" style=\"" << GRID_STYLE << "\" />" << std::endl;
     }
-	for(int i = (ycoord+COURT_GRID_INTERVAL*SCALE_FACTOR); i < (ycoord+height); i += (COURT_GRID_INTERVAL*SCALE_FACTOR)){
+	for(int i = (ycoord+COURT_GRID_INTERVAL*SCALE_FACTOR); i < (ycoord+height); i += (COURT_GRID_INTERVAL*SCALE_FACTOR)){ // Horizontal lines
         file << "<line x1=\"" << xcoord << "\" y1=\"" << i << "\" x2=\"" << (xcoord+width) << "\" y2=\"" << i << "\" style=\"" << GRID_STYLE << "\" />" << std::endl;
+	}
+
+	// Columns
+	for(int i = columnleft; i <= columnright; i += (COURT_COLUMN_INTERVAL*SCALE_FACTOR)){ // Horizontal lines of columns
+		file << "<rect x=\"" << (i-halfcolumn) << "\" y=\"" << (columnupper-halfcolumn) << "\" width=\"" << fullcolumn << "\" height=\"" << fullcolumn << "\" style=\"" << COURT_COLUMN_STYLE << "\"/>" << std::endl;
+		file << "<rect x=\"" << (i-halfcolumn) << "\" y=\"" << (columnlower-halfcolumn) << "\" width=\"" << fullcolumn << "\" height=\"" << fullcolumn << "\" style=\"" << COURT_COLUMN_STYLE << "\"/>" << std::endl;
+	}
+	for(int i = columnupper + COURT_COLUMN_INTERVAL * SCALE_FACTOR; i < columnlower; i += (COURT_COLUMN_INTERVAL*SCALE_FACTOR)){
+		file << "<rect x=\"" << (columnleft-halfcolumn) << "\" y=\"" << (i-halfcolumn) << "\" width=\"" << fullcolumn << "\" height=\"" << fullcolumn << "\" style=\"" << COURT_COLUMN_STYLE << "\"/>" << std::endl;
+		file << "<rect x=\"" << (columnright-halfcolumn) << "\" y=\"" << (i-halfcolumn) << "\" width=\"" << fullcolumn << "\" height=\"" << fullcolumn << "\" style=\"" << COURT_COLUMN_STYLE << "\"/>" << std::endl;
 	}
 
 	// Label
