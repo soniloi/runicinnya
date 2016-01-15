@@ -42,8 +42,8 @@ unsigned int City::ran(int from, int to){
 	static std::mt19937 rng;
 	static bool seed_set = false;
 	if(!seed_set){
-		rng.seed(time(NULL));
-		//rng.seed(117);
+		//rng.seed(time(NULL));
+		rng.seed(1217);
 		seed_set = true;
 	}
 	std::uniform_int_distribution<uint32_t> dist(from, to);
@@ -277,6 +277,23 @@ Court * City::createCourtConcave(){
 		newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+
+	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
+	containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord);
+	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
+		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
+		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
+					 << ", " << containingCourt->getEdge(SOUTH) << ", " << containingCourt->getEdge(WEST) <<", " << containingCourt->getEdge(NORTH) << "}" << endl;
+
+		//cout << "\tInsertion point (concave): (" << concaveRightDim << "," << concaveLowerDim << ")" << endl;
+		newUpperCoord -= (1 * lowerPolarity);
+		cout << "\tresetting newUpperCoord to " << newUpperCoord << endl;
+
+		containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord);
+	}
+
+	if(newUpperCoord == newLowerCoord)
+		newLowerCoord = concaveLowerDim - (BUILDING_DEPTH_MIN * lowerPolarity); // This should be safe, as it will only arise where we went too far out in the first place
 
 	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
 	cout << "\tnewcourt newUpperCoord = " << newUpperCoord << endl;
