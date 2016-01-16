@@ -255,6 +255,7 @@ Court * City::createCourtConcave(){
 	unsigned int concaveRightDim = concave->getCoord(rightAxis);
 	unsigned int concaveLowerDim = concave->getCoord(lowerAxis);
 
+
 	unsigned int newRightCoord, newLowerCoord, newLeftCoord, newUpperCoord;
 
 	// Get starting point of new court
@@ -272,8 +273,11 @@ Court * City::createCourtConcave(){
 
 	// FIXME: checking only the far corner is not enough; what if the far corner is clear of any courts overlapped?
 
+	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
-	containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
+	containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord); // FIXME: need to check all along line of newLeftCoord, not just corner
+	//containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLeftCoord, newUpperCoord, newLowerCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
 		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
 		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
@@ -289,9 +293,7 @@ Court * City::createCourtConcave(){
 	if(newLeftCoord == newRightCoord)
 		newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
 
-	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
-
-	containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord);
+	containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord); // FIXME: need to check all along line of newUpperCoord, not just corner
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
 		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
 		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
@@ -454,6 +456,19 @@ Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, u
 			return (*it);
 	}
 
+	return NULL;
+}
+
+/*
+ * Find a court that overlaps any point along a given line segment
+ * Returns the first one found when traversing the line
+ */
+Court * City::findContainingCourtAlongSegment(Axis primaryAxis, int primaryPolarity, unsigned int primaryCoord, unsigned int crossCoordBegin, unsigned int crossCoordEnd){
+	for (unsigned int i = crossCoordBegin; i <= crossCoordEnd; i += 1 * primaryPolarity){
+		Court * potential = this->findContainingCourt(primaryAxis, primaryCoord, i);
+		if(potential)
+			return potential;
+	}
 	return NULL;
 }
 
