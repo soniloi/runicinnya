@@ -12,27 +12,10 @@ City::City(){
 	this->maxCoords[EAST] = this->maxCoords[WEST] = STARTX;
 	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
 	this->courtCount = 0;
-
-/*
-	this->insertCourt(new Court(XAXIS, STARTX, STARTX-7, STARTY, STARTY-4, this->courtCount++));
-	//this->insertCourt(new Court(XAXIS, STARTX+1, STARTX+4, STARTY, STARTY-4, this->courtCount++));
-	
-	this->insertCourt(new Court(XAXIS, 95, 91, 37, 33, this->courtCount++));
-	this->insertCourt(new Court(XAXIS, 98, 92 ,44, 38, this->courtCount++));
-	this->insertCourt(new Court(XAXIS, 87, 85, 44, 42, this->courtCount++));
-	this->insertCourt(new Court(XAXIS, 91, 88, 46, 41, this->courtCount++));
-	
-	this->updatePerimeter();
-*/
 }
 
 City::~City(){
-	/*
-	this->clearPerimeterAndConcaves(); //FIXME:
-	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
-		delete (*it);
-	}
-	*/
+	// TODO: release perimeter points, concaves, courts, and buildings
 }
 
 /*
@@ -74,7 +57,7 @@ void City::toFile(ofstream &file){
 	}
 	for(int i = 0; i < (MAX_Y * SCALE_FACTOR); i+=(SCALE_FACTOR*10)){
 		file << "<line x1=\"" << 0 << "\" y1=\"" << i << "\" x2=\"" << (MAX_X * SCALE_FACTOR) << "\" y2=\"" << i << "\" style=\"stroke:rgb(192,224,255);stroke-width:1\" />" << endl;
-		file << "<text x=\"" << 1180 << "\" y=\"" << (i-8) << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
+		file << "<text x=\"" << 1180 << "\" y=\"" << (i-8) << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"gray\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
 	}
 
 	for(int i = 0; i < (MAX_X * SCALE_FACTOR); i+=SCALE_FACTOR){
@@ -82,7 +65,7 @@ void City::toFile(ofstream &file){
 	}
 	for(int i = 0; i < (MAX_X * SCALE_FACTOR); i+=(SCALE_FACTOR*10)){
 		file << "<line x1=\"" << i << "\" y1=\"" << 0 << "\" x2=\"" << i << "\" y2=\"" << (MAX_Y * SCALE_FACTOR) << "\" style=\"stroke:rgb(192,224,255);stroke-width:1\" />" << endl;
-		file << "<text x=\"" << (i+8) << "\" y=\"" << 392 << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"red\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
+		file << "<text x=\"" << (i+8) << "\" y=\"" << 392 << "\" font-family=\"sans-serif\" font-size=\"12px\" fill=\"gray\">" << (i/SCALE_FACTOR) << "</text>" << std::endl;
 	}
 
 	// Buildings
@@ -144,7 +127,8 @@ void City::generate(unsigned int noCourts){
 
 	for(int i = 1; i < noCourts; ++i){
 		nextCourt = this->createCourt();
-		this->insertCourt(nextCourt);
+		if(nextCourt) // FIXME: make it so it's not possible to get a NULL return
+			this->insertCourt(nextCourt);
 		this->updatePerimeter();
 	}
 
@@ -238,7 +222,6 @@ Court * City::createCourtConvex(){
  * Create a new court at a random concave point in this city
  */
 Court * City::createCourtConcave(){
-	Court * newCourt = NULL;
 
 	// Choose a concave point at random to add the new court at
 	Concave * concave = this->concaves[City::ran(0, this->concaves.size()-1)];
@@ -271,48 +254,44 @@ Court * City::createCourtConcave(){
 
 	Court * containingCourt = NULL;
 
-	// FIXME: checking only the far corner is not enough; what if the far corner is clear of any courts overlapped?
+	// FIXME: the below is too conservative, generating fewer clashes at the expense of smaller-than-necessary courts; find a better way to do this
 
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
+	//cout << "\tProposing: newRightCoord: " << newRightCoord << " newLeftCoord: " << newLeftCoord << " newLowerCoord: " << newLowerCoord << " newUpperCoord: " << newUpperCoord << endl;
 
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
-	containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord); // FIXME: need to check all along line of newLeftCoord, not just corner
-	//containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLeftCoord, newUpperCoord, newLowerCoord);
+	containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLowerCoord, newLeftCoord, newRightCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
-		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
-		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
-					 << ", " << containingCourt->getEdge(SOUTH) << ", " << containingCourt->getEdge(WEST) <<", " << containingCourt->getEdge(NORTH) << "}" << endl;
-
-		//cout << "\tInsertion point (concave): (" << concaveRightDim << "," << concaveLowerDim << ")" << endl;
 		newLeftCoord += (1 * rightPolarity);
-		cout << "\tresetting newLeftCoord to " << newLeftCoord << endl;
+		//cout << "\tresetting newLeftCoord to " << newLeftCoord << endl;
 
-		containingCourt = findContainingCourt(rightAxis, newLeftCoord, newLowerCoord);
+		if(newLeftCoord == newRightCoord){
+			newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
+			//cout << "\tresetting newRightCoord to " << newRightCoord << endl;
+		}		
+
+		containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLowerCoord, newLeftCoord, newRightCoord);
 	}
 
-	if(newLeftCoord == newRightCoord)
-		newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
+	//cout << "\t# rA lower complete #" << endl;
 
-	containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord); // FIXME: need to check all along line of newUpperCoord, not just corner
+	containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newUpperCoord, newLeftCoord, newRightCoord);
 	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
-		cout << "Potential court " << this->courtCount << " collides with existing court " << containingCourt->getIndex() << endl;
-		cout << "\tnewRightCoord: " << newRightCoord << " newLowerCoord: " << newLowerCoord << " newLeftCoord: " << newLeftCoord << " container's coords: {" << containingCourt->getEdge(EAST)
-					 << ", " << containingCourt->getEdge(SOUTH) << ", " << containingCourt->getEdge(WEST) <<", " << containingCourt->getEdge(NORTH) << "}" << endl;
-
-		//cout << "\tInsertion point (concave): (" << concaveRightDim << "," << concaveLowerDim << ")" << endl;
 		newUpperCoord -= (1 * lowerPolarity);
-		cout << "\tresetting newUpperCoord to " << newUpperCoord << endl;
+		//cout << "\tresetting newUpperCoord to " << newUpperCoord << endl;
 
-		containingCourt = findContainingCourt(lowerAxis, newUpperCoord, newRightCoord);
+		if(newLowerCoord == newUpperCoord){
+			newLowerCoord = concaveLowerDim + (BUILDING_DEPTH_MIN * lowerPolarity); // This should be safe, as it will only arise where we went too far out in the first place
+			//cout << "\tresetting newLowerCoord to " << newLowerCoord << endl;
+		}
+
+		containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newUpperCoord, newLeftCoord, newRightCoord);
 	}
 
-	if(newUpperCoord == newLowerCoord)
-		newLowerCoord = concaveLowerDim - (BUILDING_DEPTH_MIN * lowerPolarity); // This should be safe, as it will only arise where we went too far out in the first place
+	if(newRightCoord == newLowerCoord || newLowerCoord == newUpperCoord) // FIXME: better boundary checks so that this doesn't happen
+		return NULL;
 
-	newCourt = new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
-	cout << "\tnewcourt newUpperCoord = " << newUpperCoord << endl;
-
-	return newCourt;
+	return new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
 }
 
 /*
@@ -451,8 +430,9 @@ Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange,
  * Find a court that overlaps this point, i.e. that this point is within the perimeter (+ min building width) of
  */
 Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
+	//cout << "\t\ttesting point: (" << crossCoord << "," << primaryCoord << ")" << endl;
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
-		if((*it)->containsPoint(primaryAxis, primaryCoord, crossCoord))
+		if((*it)->containsPoint(primaryAxis, crossCoord, primaryCoord))
 			return (*it);
 	}
 
@@ -464,7 +444,13 @@ Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, u
  * Returns the first one found when traversing the line
  */
 Court * City::findContainingCourtAlongSegment(Axis primaryAxis, int primaryPolarity, unsigned int primaryCoord, unsigned int crossCoordBegin, unsigned int crossCoordEnd){
-	for (unsigned int i = crossCoordBegin; i <= crossCoordEnd; i += 1 * primaryPolarity){
+	unsigned int bound1 = crossCoordBegin;
+	unsigned int bound2 = crossCoordEnd;
+	if(bound2 < bound1){ // FIXME: find a way to preserve directionality, with a view to returning the first clash encountered
+		bound2 = crossCoordBegin;
+		bound1 = crossCoordEnd;
+	}
+	for (unsigned int i = bound1; i <= bound2; ++i){
 		Court * potential = this->findContainingCourt(primaryAxis, primaryCoord, i);
 		if(potential)
 			return potential;
