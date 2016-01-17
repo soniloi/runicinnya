@@ -10,6 +10,7 @@ void writeFile(City c){
 	file.open("output.svg", ofstream::out);
 	if (!file.good()){
 		cerr << "Error opening output file, exiting." << endl;
+		exit(1);
 	}
 
 	c.toFile(file);
@@ -17,9 +18,20 @@ void writeFile(City c){
 	file.close();
 }
 
-int main(){
+int main(int argc, char ** argv){
+	if(argc < 2){
+		cout << "Usage: " << argv[0] << " <number of courts>." << endl;
+		exit(1);
+	}
+
+	int noCourts = atoi(argv[1]);
+	if(noCourts < 1){
+		cout << "Error: enter a positive integer value for number of courts." << endl;
+		exit(1);
+	}
+
 	City c;
-	c.generate(6);
+	c.generate(noCourts);
 	writeFile(c);
 	return 0;
 }
