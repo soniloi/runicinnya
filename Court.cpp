@@ -3,7 +3,7 @@
 /*
  * Constructor
  * FIXME: refactor
- */
+ 
 Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind){
 	if(primaryAxis == YAXIS){
 		if(primary1 > primary2){
@@ -44,10 +44,44 @@ Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, uns
 	this->index = ind;
 	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
 }
+*/
+
+/*
+ * Constructor
+ */
+Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind){
+	unsigned int lowerPrimary = primary1;
+	unsigned int higherPrimary = primary2;
+	if(primary1 > primary2){
+		swap(lowerPrimary, higherPrimary);
+	}
+	unsigned int lowerCross = cross1;
+	unsigned int higherCross = cross2;
+	if(cross1 > cross2){
+		swap(lowerCross, higherCross);
+	}
+
+	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
+
+	this->edges[primaryAxis].push_back(lowerPrimary);
+	this->edges[primaryAxis].push_back(higherPrimary);
+	this->edges[crossAxis].push_back(lowerCross);
+	this->edges[crossAxis].push_back(higherCross);
+
+	this->index = ind;
+	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
+}
 
 Court::~Court(){
 }
 
+void Court::swap(unsigned int &num1, unsigned int &num2){
+	unsigned int temp = num1;
+	num1 = num2;
+	num2 = temp;
+}
+
+/*
 unsigned int Court::getEdge(Direction dir){
 	return this->edges[dir];
 }
@@ -56,10 +90,9 @@ unsigned int Court::getIndex(){
 	return this->index;
 }
 
-/*
- * Return whether a given point lies on the perimeter of this court
- * FIXME: refactor
- */
+
+//Return whether a given point lies on the perimeter of this court
+//FIXME: refactor
 bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	unsigned int east = this->edges[EAST];
 	unsigned int south = this->edges[SOUTH];
@@ -85,9 +118,7 @@ bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned
 	}
 }
 
-/*
- * Return whether a given point lies within or on the perimeter of this court
- */
+// Return whether a given point lies within or on the perimeter of this court
 bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	if(primaryAxis == XAXIS){
 		return ((primaryCoord >= this->edges[WEST] && primaryCoord <= this->edges[EAST]) &&
@@ -96,10 +127,9 @@ bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned 
 	return ((primaryCoord >= this->edges[NORTH] && primaryCoord <= this->edges[SOUTH]) &&
 			(crossCoord >= this->edges[WEST] && crossCoord <= this->edges[EAST]));
 }
+*/
 
-/*
- * Return the minimum a court dimension can be, based on the other one
- */
+//Return the minimum a court dimension can be, based on the other one
 unsigned int Court::getMinSecondDimension(unsigned int first){
 	int second = first / MAX_RATIO + 1;
 	if(second < COURT_DIM_MIN)
@@ -107,9 +137,8 @@ unsigned int Court::getMinSecondDimension(unsigned int first){
 	return second;
 }
 
-/*
- * Return the maximum a court dimension can be, based on the other one
- */
+
+//Return the maximum a court dimension can be, based on the other one
 unsigned int Court::getMaxSecondDimension(unsigned int first){
 	int second = first * MAX_RATIO;
 	if(second > COURT_DIM_MAX)
@@ -117,14 +146,18 @@ unsigned int Court::getMaxSecondDimension(unsigned int first){
 	return second;
 }
 
-/*
- * Output this court to svg as a rect
- */
+
+//Output this court to svg as a rect
 void Court::toFile(std::ostream &file){
-	unsigned int xcoord = this->edges[WEST] * SCALE_FACTOR;
-	unsigned int ycoord = this->edges[NORTH] * SCALE_FACTOR;
-	unsigned int width = (this->edges[EAST] - this->edges[WEST]) * SCALE_FACTOR;
-	unsigned int height = (this->edges[SOUTH] - this->edges[NORTH]) * SCALE_FACTOR;
+	unsigned int west = this->edges[XAXIS][0];
+	unsigned int east = this->edges[XAXIS][1];
+	unsigned int north = this->edges[YAXIS][0];
+	unsigned int south = this->edges[YAXIS][1];
+
+	unsigned int xcoord = west * SCALE_FACTOR;
+	unsigned int ycoord = north * SCALE_FACTOR;
+	unsigned int width = (east - west) * SCALE_FACTOR;
+	unsigned int height = (south - north) * SCALE_FACTOR;
 
 	unsigned int halfcolumn = (COURT_COLUMN_SIZE / 2) * SCALE_FACTOR;
 	unsigned int fullcolumn = COURT_COLUMN_SIZE * SCALE_FACTOR;

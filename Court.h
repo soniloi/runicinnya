@@ -31,8 +31,11 @@
 
 class Court {
 private:
-	std::map<Direction, unsigned int> edges; // FIXME: consider refactoring to store internally as axis-point mapping instead of direction-dimension
+	std::map<Axis, std::vector<unsigned int> > edges;
+
+	//std::map<Direction, unsigned int> edges; // FIXME: consider refactoring to store internally as axis-point mapping instead of direction-dimension
 	unsigned int index; // FIXME: probably remove once debugged
+	static void swap(unsigned int &num1, unsigned int &num2);
 
 public:
 	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind); // FIXME: rename consistently
