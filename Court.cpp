@@ -86,10 +86,10 @@ unsigned int Court::getMaxSecondDimension(unsigned int first){
 
 //Output this court to svg as a rect
 void Court::toFile(std::ostream &file){
-	unsigned int west = this->edges[XAXIS][0];
-	unsigned int east = this->edges[XAXIS][1];
-	unsigned int north = this->edges[YAXIS][0];
-	unsigned int south = this->edges[YAXIS][1];
+	unsigned int west = this->edges[Court::axisOf[WEST]][0];
+	unsigned int east = this->edges[Court::axisOf[EAST]][1];
+	unsigned int north = this->edges[Court::axisOf[NORTH]][0];
+	unsigned int south = this->edges[Court::axisOf[SOUTH]][1];
 
 	unsigned int xcoord = west * SCALE_FACTOR;
 	unsigned int ycoord = north * SCALE_FACTOR;
