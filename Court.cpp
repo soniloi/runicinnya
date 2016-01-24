@@ -68,20 +68,11 @@ bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned 
 		(crossCoord >= this->edges[crossAxis][0] && crossCoord <= this->edges[crossAxis][1]));
 }
 
-// Return whether a proposed court would clash with this one
-bool Court::collidesWith(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2){
-	unsigned int primaryLowerProposed = primary1;
-	unsigned int primaryHigherProposed = primary2;
-	unsigned int crossLowerProposed = cross1;
-	unsigned int crossHigherProposed = cross2;
-
-	if(primary1 > primary2){
-		swap(primaryLowerProposed, primaryHigherProposed);
-	}
-	if(cross1 > cross2){
-		swap(crossLowerProposed, crossHigherProposed);
-	}
-
+// Resolve conflicts between the coordinates of a proposed court and this one
+// Return true if a conflict was found, or false otherwise
+// Note that parameters must be in strict order; the lower must always be passed before the higher
+// FIXME: definitely a candidate for refactoring
+bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
 	unsigned int primaryLowerExisting = this->edges[primaryAxis][0] - BUILDING_DEPTH_MIN;
 	unsigned int primaryHigherExisting = this->edges[primaryAxis][1] + BUILDING_DEPTH_MIN;
@@ -92,17 +83,37 @@ bool Court::collidesWith(Axis primaryAxis, unsigned int primary1, unsigned int p
 	//std::cout << "primaryLowerExisting: " << primaryLowerExisting << " primaryHigherExisting: " << primaryHigherExisting << " crossLowerExisting: " << crossLowerExisting << " crossHigherExisting: " << crossHigherExisting << std::endl;
 
 	if(primaryLowerProposed < primaryHigherExisting && primaryLowerProposed > primaryLowerExisting){
-		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting)
+		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting){
+			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+				crossLowerProposed = crossHigherExisting;
+			else
+				primaryLowerProposed = primaryHigherExisting;
 			return true;
-		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting)
+		}
+		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting){
+			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+				crossHigherProposed = crossLowerExisting;
+			else
+				primaryLowerProposed = primaryHigherExisting;
 			return true;
+		}
 		return false;
 	}
 	if(primaryHigherProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting){
-		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting)
+		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting){
+			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+				crossHigherProposed = crossLowerExisting;
+			else
+				primaryHigherProposed = primaryLowerExisting;
 			return true;
-		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting)
+		}
+		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting){
+			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+				crossLowerProposed = crossHigherExisting;
+			else
+				primaryHigherProposed = primaryLowerExisting;
 			return true;
+		}
 		return false;
 	}
 

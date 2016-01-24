@@ -65,7 +65,7 @@ public:
 	bool hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	bool containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 
-	bool collidesWith(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2);
+	bool resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed);
 
 	static unsigned int getMinSecondDimension(unsigned int first);
 	static unsigned int getMaxSecondDimension(unsigned int first);
