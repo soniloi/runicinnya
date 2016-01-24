@@ -252,12 +252,22 @@ Court * City::createCourtConcave(){
 	newLeftCoord = newRightCoord - (City::ran(COURT_DIM_MIN, COURT_DIM_MAX) * rightPolarity);
 	unsigned int firstDim = City::absolute(newRightCoord - newLeftCoord);
 
-	Court * containingCourt = NULL;
-
-	// FIXME: the below is too conservative, generating fewer clashes at the expense of smaller-than-necessary courts; find a better way to do this
-
 	newUpperCoord = newLowerCoord + (City::ran(Court::getMinSecondDimension(firstDim), Court::getMaxSecondDimension(firstDim)) * lowerPolarity);
 	//cout << "\tProposing: newRightCoord: " << newRightCoord << " newLeftCoord: " << newLeftCoord << " newLowerCoord: " << newLowerCoord << " newUpperCoord: " << newUpperCoord << endl;
+
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		if(newLeftCoord > newRightCoord)
+			swap(newLeftCoord, newRightCoord);
+		if(newUpperCoord > newLowerCoord)
+			swap(newUpperCoord, newLowerCoord);
+		if((*it)->resolveCollision(rightAxis, newLeftCoord, newRightCoord, newUpperCoord, newLowerCoord)){
+			cout << "\tCollision detected and resolved" << endl;
+			// TODO: check for zero-length resolutions
+		}
+	}
+/*
+	// FIXME: the below is too conservative, generating fewer clashes at the expense of smaller-than-necessary courts; find a better way to do this
+	Court * containingCourt = NULL;
 
 	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
 	containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLowerCoord, newLeftCoord, newRightCoord);
@@ -290,6 +300,7 @@ Court * City::createCourtConcave(){
 
 	if(newRightCoord == newLowerCoord || newLowerCoord == newUpperCoord) // FIXME: better boundary checks so that this doesn't happen
 		return NULL;
+	*/
 
 	return new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
 }
