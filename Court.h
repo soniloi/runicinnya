@@ -37,6 +37,26 @@ private:
 	unsigned int index; // FIXME: probably remove once debugged
 	static void swap(unsigned int &num1, unsigned int &num2);
 
+	static std::map<Direction, Axis> axisOf;
+	static std::map<Direction, Axis> createAxisOf(){
+		std::map<Direction, Axis> m;
+		m[EAST] = XAXIS;
+		m[SOUTH] = YAXIS;
+		m[WEST] = XAXIS;
+		m[NORTH] = YAXIS;
+		return m;
+	}
+	
+	static std::map<Direction, unsigned int> positionIndexOf;
+	static std::map<Direction, unsigned int> createPositionIndexOf(){
+		std::map<Direction, unsigned int> m;
+		m[EAST] = 1;
+		m[SOUTH] = 1;
+		m[WEST] = 0;
+		m[NORTH] = 0;
+		return m;
+	}
+
 public:
 	Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind); // FIXME: rename consistently
 	~Court();

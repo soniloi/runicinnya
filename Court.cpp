@@ -1,50 +1,7 @@
 #include "Court.h"
 
-/*
- * Constructor
- * FIXME: refactor
- 
-Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, unsigned int cross1, unsigned int cross2, unsigned int ind){
-	if(primaryAxis == YAXIS){
-		if(primary1 > primary2){
-			this->edges[SOUTH] = primary1;
-			this->edges[NORTH] = primary2;
-		}
-		else{
-			this->edges[SOUTH] = primary2;
-			this->edges[NORTH] = primary1;
-		}
-		if(cross1 > cross2){
-			this->edges[EAST] = cross1;
-			this->edges[WEST] = cross2;
-		}
-		else{
-			this->edges[EAST] = cross2;
-			this->edges[WEST] = cross1;
-		}
-	}
-	else{
-		if(primary1 > primary2){
-			this->edges[EAST] = primary1;
-			this->edges[WEST] = primary2;
-		}
-		else{
-			this->edges[EAST] = primary2;
-			this->edges[WEST] = primary1;
-		}
-		if(cross1 > cross2){
-			this->edges[SOUTH] = cross1;
-			this->edges[NORTH] = cross2;
-		}
-		else{
-			this->edges[SOUTH] = cross2;
-			this->edges[NORTH] = cross1;
-		}
-	}
-	this->index = ind;
-	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
-}
-*/
+std::map<Direction, Axis> Court::axisOf = Court::createAxisOf();
+std::map<Direction, unsigned int> Court::positionIndexOf = Court::createPositionIndexOf();
 
 /*
  * Constructor
@@ -69,7 +26,6 @@ Court::Court(Axis primaryAxis, unsigned int primary1, unsigned int primary2, uns
 	this->edges[crossAxis].push_back(higherCross);
 
 	this->index = ind;
-	//std::cout << "\teast: " << this->edges[EAST] << "\tsouth: " << this->edges[SOUTH] << "\twest: " << this->edges[WEST] << "\tnorth: " << this->edges[NORTH] << "\t" << std::endl;
 }
 
 Court::~Court(){
@@ -81,23 +37,24 @@ void Court::swap(unsigned int &num1, unsigned int &num2){
 	num2 = temp;
 }
 
-/*
 unsigned int Court::getEdge(Direction dir){
-	return this->edges[dir];
+	Axis axis = Court::axisOf[dir];
+	unsigned int ind = Court::positionIndexOf[dir];
+	return this->edges[axis][ind];
 }
 
 unsigned int Court::getIndex(){
 	return this->index;
 }
 
-
 //Return whether a given point lies on the perimeter of this court
-//FIXME: refactor
+//FIXME: change this to work with the axis-coord idiom
 bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	unsigned int east = this->edges[EAST];
-	unsigned int south = this->edges[SOUTH];
-	unsigned int west = this->edges[WEST];
-	unsigned int north = this->edges[NORTH];
+	unsigned int west = this->edges[XAXIS][0];
+	unsigned int east = this->edges[XAXIS][1];
+	unsigned int north = this->edges[YAXIS][0];
+	unsigned int south = this->edges[YAXIS][1];
+
 	if(primaryAxis == XAXIS){
 		if (primaryCoord == east || primaryCoord == west){
 			return (crossCoord <= south && crossCoord >= north);
@@ -119,15 +76,20 @@ bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned
 }
 
 // Return whether a given point lies within or on the perimeter of this court
+// FIXME: change this to work with the axis-coord idiom
 bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
+	unsigned int west = this->edges[XAXIS][0];
+	unsigned int east = this->edges[XAXIS][1];
+	unsigned int north = this->edges[YAXIS][0];
+	unsigned int south = this->edges[YAXIS][1];
+
 	if(primaryAxis == XAXIS){
-		return ((primaryCoord >= this->edges[WEST] && primaryCoord <= this->edges[EAST]) &&
-				(crossCoord >= this->edges[NORTH] && crossCoord <= this->edges[SOUTH]));
+		return ((primaryCoord >= west && primaryCoord <= east) &&
+				(crossCoord >= north && crossCoord <= south));
 	}
-	return ((primaryCoord >= this->edges[NORTH] && primaryCoord <= this->edges[SOUTH]) &&
-			(crossCoord >= this->edges[WEST] && crossCoord <= this->edges[EAST]));
+	return ((primaryCoord >= north && primaryCoord <= south) &&
+			(crossCoord >= west && crossCoord <= east));
 }
-*/
 
 //Return the minimum a court dimension can be, based on the other one
 unsigned int Court::getMinSecondDimension(unsigned int first){
