@@ -84,14 +84,14 @@ bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerPropose
 
 	if(primaryLowerProposed < primaryHigherExisting && primaryLowerProposed > primaryLowerExisting){
 		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting){
-			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+			if(primaryLowerProposed >= primaryLowerExisting && primaryHigherProposed <= primaryHigherExisting)
 				crossLowerProposed = crossHigherExisting;
 			else
 				primaryLowerProposed = primaryHigherExisting;
 			return true;
 		}
 		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting){
-			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+			if(primaryLowerProposed >= primaryLowerExisting && primaryHigherProposed <= primaryHigherExisting)
 				crossHigherProposed = crossLowerExisting;
 			else
 				primaryLowerProposed = primaryHigherExisting;
@@ -101,14 +101,14 @@ bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerPropose
 	}
 	if(primaryHigherProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting){
 		if(crossHigherProposed > crossLowerExisting && crossHigherProposed < crossHigherExisting){
-			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+			if(primaryLowerProposed >= primaryLowerExisting && primaryHigherProposed <= primaryHigherExisting)
 				crossHigherProposed = crossLowerExisting;
 			else
 				primaryHigherProposed = primaryLowerExisting;
 			return true;
 		}
 		if(crossLowerProposed < crossHigherExisting && crossLowerProposed > crossLowerExisting){
-			if(primaryLowerProposed > primaryLowerExisting && primaryHigherProposed < primaryHigherExisting)
+			if(primaryLowerProposed >= primaryLowerExisting && primaryHigherProposed <= primaryHigherExisting)
 				crossLowerProposed = crossHigherExisting;
 			else
 				primaryHigherProposed = primaryLowerExisting;
