@@ -32,9 +32,8 @@
 class Court {
 private:
 	std::map<Axis, std::vector<unsigned int> > edges;
-
-	//std::map<Direction, unsigned int> edges; // FIXME: consider refactoring to store internally as axis-point mapping instead of direction-dimension
 	unsigned int index; // FIXME: probably remove once debugged
+
 	static void swap(unsigned int &num1, unsigned int &num2);
 
 	static std::map<Direction, Axis> axisOf;
@@ -46,7 +45,7 @@ private:
 		m[NORTH] = YAXIS;
 		return m;
 	}
-	
+
 	static std::map<Direction, unsigned int> positionIndexOf;
 	static std::map<Direction, unsigned int> createPositionIndexOf(){
 		std::map<Direction, unsigned int> m;

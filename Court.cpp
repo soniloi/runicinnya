@@ -48,47 +48,24 @@ unsigned int Court::getIndex(){
 }
 
 //Return whether a given point lies on the perimeter of this court
-//FIXME: change this to work with the axis-coord idiom
 bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	unsigned int west = this->edges[XAXIS][0];
-	unsigned int east = this->edges[XAXIS][1];
-	unsigned int north = this->edges[YAXIS][0];
-	unsigned int south = this->edges[YAXIS][1];
+	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
 
-	if(primaryAxis == XAXIS){
-		if (primaryCoord == east || primaryCoord == west){
-			return (crossCoord <= south && crossCoord >= north);
-		}
-		else if (crossCoord == south || crossCoord == north){
-			return (primaryCoord <= east && primaryCoord >= west);
-		}
-		return false;
-	}
-	else{
-		if (primaryCoord == south || primaryCoord == north){
-			return (crossCoord <= east && crossCoord >= west);
-		}
-		else if (crossCoord == east || crossCoord == west){
-			return (primaryCoord <= south && primaryCoord >= north);
-		}
-		return false;
-	}
+	std::vector<unsigned int> primaryCoords = this->edges[primaryAxis];
+	std::vector<unsigned int> crossCoords = this->edges[crossAxis];
+
+	if(primaryCoord == primaryCoords[1] || primaryCoord == primaryCoords[0])
+		return (crossCoord <= crossCoords[1] && crossCoord >= crossCoords[0]);
+	if(crossCoord == crossCoords[1] || crossCoord == crossCoords[0])
+		return (primaryCoord <= primaryCoords[1] && primaryCoord >= primaryCoords[0]);
+	return false;
 }
 
 // Return whether a given point lies within or on the perimeter of this court
-// FIXME: change this to work with the axis-coord idiom
 bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	unsigned int west = this->edges[XAXIS][0];
-	unsigned int east = this->edges[XAXIS][1];
-	unsigned int north = this->edges[YAXIS][0];
-	unsigned int south = this->edges[YAXIS][1];
-
-	if(primaryAxis == XAXIS){
-		return ((primaryCoord >= west && primaryCoord <= east) &&
-				(crossCoord >= north && crossCoord <= south));
-	}
-	return ((primaryCoord >= north && primaryCoord <= south) &&
-			(crossCoord >= west && crossCoord <= east));
+	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
+	return ((primaryCoord >= this->edges[primaryAxis][0] && primaryCoord <= this->edges[primaryAxis][1]) &&
+		(crossCoord >= this->edges[crossAxis][0] && crossCoord <= this->edges[crossAxis][1]));
 }
 
 //Return the minimum a court dimension can be, based on the other one
@@ -99,7 +76,6 @@ unsigned int Court::getMinSecondDimension(unsigned int first){
 	return second;
 }
 
-
 //Return the maximum a court dimension can be, based on the other one
 unsigned int Court::getMaxSecondDimension(unsigned int first){
 	int second = first * MAX_RATIO;
@@ -107,7 +83,6 @@ unsigned int Court::getMaxSecondDimension(unsigned int first){
 		second = COURT_DIM_MAX;
 	return second;
 }
-
 
 //Output this court to svg as a rect
 void Court::toFile(std::ostream &file){
