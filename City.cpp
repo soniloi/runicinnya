@@ -425,7 +425,8 @@ Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &
 Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange, unsigned int dimToStay, Axis normalAxis, int polarity, unsigned int &match){
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * court = (*it);
-		for(int i = BUILDING_DEPTH_MIN; i <= BUILDING_DEPTH_MAX; ++i){
+		unsigned int bound = (BUILDING_DEPTH_MAX < 2) ? 2 : BUILDING_DEPTH_MAX; // Even if BUILDING_DEPTH_MAX is 1, the minimum distance between courts will be 3 when we want to allow for another one
+		for(int i = BUILDING_DEPTH_MIN; i <= bound; ++i){
 			unsigned int proposed = dimToChange + (i * (polarity));
 			if(court != baseCourt && court->hasOnPerimeter(normalAxis, proposed, dimToStay)){
 				match = proposed;
