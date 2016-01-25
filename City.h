@@ -18,9 +18,6 @@
 
 #define BG_COLOUR "white"
 
-#define POLARITY_POSITIVE 1
-#define POLARITY_NEGATIVE -1
-
 
 class City {
 private:

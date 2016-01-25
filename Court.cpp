@@ -2,6 +2,12 @@
 
 std::map<Direction, Axis> Court::axisOf = Court::createAxisOf();
 std::map<Direction, unsigned int> Court::positionIndexOf = Court::createPositionIndexOf();
+std::map<Direction, Direction> Court::oppositeOf = Court::createOppositeOf();
+std::map<Direction, int> Court::polarityOf = Court::createPolarityOf();
+std::map<Direction, Direction> Court::leftOf = Court::createLeftOf();
+std::map<Direction, Direction> Court::rightOf = Court::createRightOf();
+
+using namespace std; // FIXME: only for debugging
 
 /*
  * Constructor
@@ -115,6 +121,42 @@ bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerPropose
 			return true;
 		}
 		return false;
+	}
+
+	return false;
+}
+
+// Return whether a given court is adjacent to this one
+bool Court::adjacentTo(Court * that){
+	for(int i = 0; i < (int) NUM_DIRECTIONS; ++i){
+		Direction dir = (Direction) i;
+		int polarity = Court::polarityOf[dir];
+		Direction facingDir = Court::oppositeOf[dir];
+
+		unsigned int thisPrimaryCoord = this->getEdge(dir);
+		unsigned int thatPrimaryCoord = that->getEdge(facingDir);
+
+		if(thatPrimaryCoord == (thisPrimaryCoord + (BUILDING_DEPTH_MIN * (polarity)))){
+
+			unsigned int thisLeftCoord = this->getEdge(Court::leftOf[dir]);
+			unsigned int thatLeftCoord = that->getEdge(Court::leftOf[dir]);
+			unsigned int thisRightCoord = this->getEdge(Court::rightOf[dir]);
+			unsigned int thatRightCoord = that->getEdge(Court::rightOf[dir]);
+/*
+			cout << "thisPrimaryCoord: " << thisPrimaryCoord << " thatPrimaryCoord: " << thatPrimaryCoord << endl;
+			cout << "thisLeftCoord: " << thisLeftCoord << " thatLeftCoord: " << thatLeftCoord << endl;
+			cout << "thisRightCoord: " << thisRightCoord << " thatRightCoord: " << thatRightCoord << endl;
+*/
+			if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
+				cout << "off to the left" << endl;
+				return false;
+			}
+			if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
+				cout << "off to the right" << endl;
+				return false;
+			}
+			return true;
+		}
 	}
 
 	return false;
