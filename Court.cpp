@@ -147,17 +147,35 @@ bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, 
 			cout << "thisLeftCoord: " << thisLeftCoord << " thatLeftCoord: " << thatLeftCoord << endl;
 			cout << "thisRightCoord: " << thisRightCoord << " thatRightCoord: " << thatRightCoord << endl;
 */
-			if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
-				cout << "off to the left" << endl;
-				return false;
+			if(polarity == POLARITY_POSITIVE){
+				if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
+					cout << "off to the left" << endl;
+					return false;
+				}
+				if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
+					cout << "off to the right" << endl;
+					return false;
+				}
+				lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+				upperBound = thisRightCoord > thatRightCoord ? thatRightCoord : thisRightCoord;
 			}
-			if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
-				cout << "off to the right" << endl;
-				return false;
+			else{
+				if(thisLeftCoord > thatLeftCoord && thisRightCoord >= thatLeftCoord){
+					cout << "off to the left" << endl;
+					return false;
+				}
+				if(thisRightCoord < thatRightCoord && thisLeftCoord <= thatRightCoord){
+					cout << "off to the right" << endl;
+					return false;
+				}
+				lowerBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
+				upperBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+				// FIXME: alternatively the below; decide which is best
+				//lowerBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+				//upperBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
 			}
+
 			side = dir;
-			lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
-			upperBound = thisRightCoord > thatRightCoord ? thatRightCoord : thisRightCoord;
 			return true;
 		}
 	}
