@@ -107,10 +107,7 @@ public:
 	unsigned int getIndex(); // FIXME:
 
 	bool hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
-	bool containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
-
 	bool resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed);
-
 	bool adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, unsigned int &upperBound);
 
 	static unsigned int getMinSecondDimension(unsigned int first);

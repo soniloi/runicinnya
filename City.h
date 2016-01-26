@@ -39,8 +39,6 @@ private:
 	Court * getStartingCourt();
 	Court * travelClockwise(Court * currCourt, Point * &currPoint, Direction &currDir);
 	Court * findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange, unsigned int dimToStay, Axis normalAxis, int polarity, unsigned int &match);
-	Court * findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
-	Court * findContainingCourtAlongSegment(Axis primaryAxis, int primaryPolarity, unsigned int primaryCoord, unsigned int crossCoordBegin, unsigned int crossCoordEnd);
 
 	void insertCourt(Court * court);
 	Court * createInitialCourt();

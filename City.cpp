@@ -265,42 +265,6 @@ Court * City::createCourtConcave(){
 			// TODO: check for zero-length resolutions
 		}
 	}
-/*
-	// FIXME: the below is too conservative, generating fewer clashes at the expense of smaller-than-necessary courts; find a better way to do this
-	Court * containingCourt = NULL;
-
-	// Ensure that the proposed point is not contained with any existing courts, i.e. that this proposed court does not clash with any others
-	containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLowerCoord, newLeftCoord, newRightCoord);
-	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
-		newLeftCoord += (1 * rightPolarity);
-		//cout << "\tresetting newLeftCoord to " << newLeftCoord << endl;
-
-		if(newLeftCoord == newRightCoord){
-			newRightCoord = concaveRightDim - (BUILDING_DEPTH_MIN * rightPolarity); // This should be safe, as it will only arise where we went too far out in the first place
-			//cout << "\tresetting newRightCoord to " << newRightCoord << endl;
-		}		
-
-		containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newLowerCoord, newLeftCoord, newRightCoord);
-	}
-
-	//cout << "\t# rA lower complete #" << endl;
-
-	containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newUpperCoord, newLeftCoord, newRightCoord);
-	while(containingCourt){ // TODO: change this to an if and have findContainingCourt return a minimum safe value
-		newUpperCoord -= (1 * lowerPolarity);
-		//cout << "\tresetting newUpperCoord to " << newUpperCoord << endl;
-
-		if(newLowerCoord == newUpperCoord){
-			newLowerCoord = concaveLowerDim + (BUILDING_DEPTH_MIN * lowerPolarity); // This should be safe, as it will only arise where we went too far out in the first place
-			//cout << "\tresetting newLowerCoord to " << newLowerCoord << endl;
-		}
-
-		containingCourt = findContainingCourtAlongSegment(rightAxis, rightPolarity, newUpperCoord, newLeftCoord, newRightCoord);
-	}
-
-	if(newRightCoord == newLowerCoord || newLowerCoord == newUpperCoord) // FIXME: better boundary checks so that this doesn't happen
-		return NULL;
-	*/
 
 	return new Court(rightAxis, newRightCoord, newLeftCoord, newLowerCoord, newUpperCoord, this->courtCount++);
 }
@@ -435,38 +399,6 @@ Court * City::findNeighbouringCourt(Court * baseCourt, unsigned int dimToChange,
 		}
 	}
 
-	return NULL;
-}
-
-/*
- * Find a court that overlaps this point, i.e. that this point is within the perimeter (+ min building width) of
- */
-Court * City::findContainingCourt(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	//cout << "\t\ttesting point: (" << crossCoord << "," << primaryCoord << ")" << endl;
-	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
-		if((*it)->containsPoint(primaryAxis, crossCoord, primaryCoord))
-			return (*it);
-	}
-
-	return NULL;
-}
-
-/*
- * Find a court that overlaps any point along a given line segment
- * Returns the first one found when traversing the line
- */
-Court * City::findContainingCourtAlongSegment(Axis primaryAxis, int primaryPolarity, unsigned int primaryCoord, unsigned int crossCoordBegin, unsigned int crossCoordEnd){
-	unsigned int bound1 = crossCoordBegin;
-	unsigned int bound2 = crossCoordEnd;
-	if(bound2 < bound1){ // FIXME: find a way to preserve directionality, with a view to returning the first clash encountered
-		bound2 = crossCoordBegin;
-		bound1 = crossCoordEnd;
-	}
-	for (unsigned int i = bound1; i <= bound2; ++i){
-		Court * potential = this->findContainingCourt(primaryAxis, primaryCoord, i);
-		if(potential)
-			return potential;
-	}
 	return NULL;
 }
 

@@ -67,13 +67,6 @@ bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned
 	return false;
 }
 
-// Return whether a given point lies within or on the perimeter of this court
-bool Court::containsPoint(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
-	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
-	return ((primaryCoord >= this->edges[primaryAxis][0] && primaryCoord <= this->edges[primaryAxis][1]) &&
-		(crossCoord >= this->edges[crossAxis][0] && crossCoord <= this->edges[crossAxis][1]));
-}
-
 // Resolve conflicts between the coordinates of a proposed court and this one
 // Return true if a conflict was found, or false otherwise
 // Note that parameters must be in strict order; the lower must always be passed before the higher
