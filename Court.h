@@ -109,7 +109,7 @@ public:
 
 	bool resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed);
 
-	bool adjacentTo(Court * that);
+	bool adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, unsigned int &upperBound);
 
 	static unsigned int getMinSecondDimension(unsigned int first);
 	static unsigned int getMaxSecondDimension(unsigned int first);

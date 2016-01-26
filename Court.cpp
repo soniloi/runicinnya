@@ -127,7 +127,7 @@ bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerPropose
 }
 
 // Return whether a given court is adjacent to this one
-bool Court::adjacentTo(Court * that){
+bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, unsigned int &upperBound){
 	for(int i = 0; i < (int) NUM_DIRECTIONS; ++i){
 		Direction dir = (Direction) i;
 		int polarity = Court::polarityOf[dir];
@@ -155,6 +155,9 @@ bool Court::adjacentTo(Court * that){
 				cout << "off to the right" << endl;
 				return false;
 			}
+			side = dir;
+			lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+			upperBound = thisRightCoord > thatRightCoord ? thatRightCoord : thisRightCoord;
 			return true;
 		}
 	}
