@@ -136,47 +136,49 @@ bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, 
 		unsigned int thisPrimaryCoord = this->getEdge(dir);
 		unsigned int thatPrimaryCoord = that->getEdge(facingDir);
 
-		if(thatPrimaryCoord == (thisPrimaryCoord + (BUILDING_DEPTH_MIN * (polarity)))){
+		for(int j = WALKWAY_LENGTH_MIN; j <= WALKWAY_LENGTH_MAX; ++j){
+			if(thatPrimaryCoord == (thisPrimaryCoord + (j * (polarity)))){
 
-			unsigned int thisLeftCoord = this->getEdge(Court::leftOf[dir]);
-			unsigned int thatLeftCoord = that->getEdge(Court::leftOf[dir]);
-			unsigned int thisRightCoord = this->getEdge(Court::rightOf[dir]);
-			unsigned int thatRightCoord = that->getEdge(Court::rightOf[dir]);
-/*
-			cout << "thisPrimaryCoord: " << thisPrimaryCoord << " thatPrimaryCoord: " << thatPrimaryCoord << endl;
-			cout << "thisLeftCoord: " << thisLeftCoord << " thatLeftCoord: " << thatLeftCoord << endl;
-			cout << "thisRightCoord: " << thisRightCoord << " thatRightCoord: " << thatRightCoord << endl;
-*/
-			if(polarity == POLARITY_POSITIVE){
-				if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
-					cout << "off to the left" << endl;
-					return false;
+				unsigned int thisLeftCoord = this->getEdge(Court::leftOf[dir]);
+				unsigned int thatLeftCoord = that->getEdge(Court::leftOf[dir]);
+				unsigned int thisRightCoord = this->getEdge(Court::rightOf[dir]);
+				unsigned int thatRightCoord = that->getEdge(Court::rightOf[dir]);
+	/*
+				cout << "thisPrimaryCoord: " << thisPrimaryCoord << " thatPrimaryCoord: " << thatPrimaryCoord << endl;
+				cout << "thisLeftCoord: " << thisLeftCoord << " thatLeftCoord: " << thatLeftCoord << endl;
+				cout << "thisRightCoord: " << thisRightCoord << " thatRightCoord: " << thatRightCoord << endl;
+	*/
+				if(polarity == POLARITY_POSITIVE){
+					if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
+						cout << "off to the left" << endl;
+						return false;
+					}
+					if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
+						cout << "off to the right" << endl;
+						return false;
+					}
+					lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+					upperBound = thisRightCoord > thatRightCoord ? thatRightCoord : thisRightCoord;
 				}
-				if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
-					cout << "off to the right" << endl;
-					return false;
+				else{
+					if(thisLeftCoord > thatLeftCoord && thisRightCoord >= thatLeftCoord){
+						cout << "off to the left" << endl;
+						return false;
+					}
+					if(thisRightCoord < thatRightCoord && thisLeftCoord <= thatRightCoord){
+						cout << "off to the right" << endl;
+						return false;
+					}
+					lowerBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
+					upperBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+					// FIXME: alternatively the below; decide which is best
+					//lowerBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
+					//upperBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
 				}
-				lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
-				upperBound = thisRightCoord > thatRightCoord ? thatRightCoord : thisRightCoord;
-			}
-			else{
-				if(thisLeftCoord > thatLeftCoord && thisRightCoord >= thatLeftCoord){
-					cout << "off to the left" << endl;
-					return false;
-				}
-				if(thisRightCoord < thatRightCoord && thisLeftCoord <= thatRightCoord){
-					cout << "off to the right" << endl;
-					return false;
-				}
-				lowerBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
-				upperBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
-				// FIXME: alternatively the below; decide which is best
-				//lowerBound = thisLeftCoord > thatLeftCoord ? thatLeftCoord : thisLeftCoord;
-				//upperBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
-			}
 
-			side = dir;
-			return true;
+				side = dir;
+				return true;
+			}
 		}
 	}
 
