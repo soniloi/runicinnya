@@ -143,18 +143,13 @@ bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, 
 				unsigned int thatLeftCoord = that->getEdge(Court::leftOf[dir]);
 				unsigned int thisRightCoord = this->getEdge(Court::rightOf[dir]);
 				unsigned int thatRightCoord = that->getEdge(Court::rightOf[dir]);
-	/*
-				cout << "thisPrimaryCoord: " << thisPrimaryCoord << " thatPrimaryCoord: " << thatPrimaryCoord << endl;
-				cout << "thisLeftCoord: " << thisLeftCoord << " thatLeftCoord: " << thatLeftCoord << endl;
-				cout << "thisRightCoord: " << thisRightCoord << " thatRightCoord: " << thatRightCoord << endl;
-	*/
-				if(polarity == POLARITY_POSITIVE){
+
+				// FIXME: refactor the below
+				if(Court::polarityOf[Court::rightOf[dir]] == POLARITY_POSITIVE){
 					if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
-						cout << "off to the left" << endl;
 						return false;
 					}
 					if(thisRightCoord > thatRightCoord && thisLeftCoord >= thatRightCoord){
-						cout << "off to the right" << endl;
 						return false;
 					}
 					lowerBound = thisLeftCoord < thatLeftCoord ? thatLeftCoord : thisLeftCoord;
@@ -162,11 +157,9 @@ bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, 
 				}
 				else{
 					if(thisLeftCoord > thatLeftCoord && thisRightCoord >= thatLeftCoord){
-						cout << "off to the left" << endl;
 						return false;
 					}
 					if(thisRightCoord < thatRightCoord && thisLeftCoord <= thatRightCoord){
-						cout << "off to the right" << endl;
 						return false;
 					}
 					lowerBound = thisRightCoord < thatRightCoord ? thatRightCoord : thisRightCoord;
