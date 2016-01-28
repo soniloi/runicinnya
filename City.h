@@ -9,6 +9,7 @@
 #include "Concave.h"
 #include "Court.h"
 #include "Building.h"
+#include "Walkway.h"
 
 #define WIDTH MAX_X
 #define HEIGHT MAX_Y
@@ -29,6 +30,7 @@ private:
 	std::vector<Point *> perimeter; // FIXME: use list instead?
 	std::vector<Concave *> concaves;
 	std::list<Building *> buildings;
+	std::list<Walkway *> walkways;
 
 	static unsigned int ran(int from, int to);
 	static unsigned int absolute(int num);

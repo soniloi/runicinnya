@@ -5,7 +5,7 @@ Walkway::Walkway(Direction dir, Court * c1, Court * c2, unsigned int le){
 	this->court1 = c1;
 	this->court2 = c2;
 	this->leftEdge = le;
-	std::cout << "Creating connecting walkway between courts in direction: " << this->direction << std::endl;
+	std::cout << "Creating connecting walkway between courts " << c1->getIndex() << " and " << c2->getIndex() << " in direction: " << this->direction << " at coord " << this->leftEdge << std::endl;
 }
 
 void toFile(std::ostream &file){

@@ -15,7 +15,7 @@ City::City(){
 }
 
 City::~City(){
-	// TODO: release perimeter points, concaves, courts, and buildings
+	// TODO: release perimeter points, concaves, courts, buildings, and walkways
 }
 
 /*
@@ -132,9 +132,23 @@ void City::generate(unsigned int noCourts){
 		this->updatePerimeter();
 	}
 
+
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		Court * current = (*it);
+		for(auto jt = this->courts.begin(); jt != it; jt++){
+			Court * other = (*jt);
+			Direction adjacentSide;
+			unsigned int adjacentLower, adjacentUpper;
+
+			if(current->adjacentTo(other, adjacentSide, adjacentLower, adjacentUpper)){
+				this->walkways.push_back(new Walkway(City::rightOf[adjacentSide], current, other, City::ran(adjacentLower, adjacentUpper)));
+			}
+		}
+	}
+
 	// TODO: this should instead be detectBuildings() or computeBuildings() or something, determined based on where courts have been placed
-	this->buildings.push_back(new Building(XAXIS, 87, 45, 1, 1));
-	this->buildings.push_back(new Building(YAXIS, 44, 92, 2, 7));
+	//this->buildings.push_back(new Building(XAXIS, 87, 45, 1, 1));
+	//this->buildings.push_back(new Building(YAXIS, 44, 92, 2, 7));
 }
 
 /*
