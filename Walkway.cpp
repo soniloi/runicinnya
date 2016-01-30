@@ -18,6 +18,9 @@ void Walkway::toFile(std::ostream &file){
 		left -= WALKWAY_WIDTH;
 
 	float xcoord, ycoord, width, height;
+	float x1a, y1a, x2a, y2a;
+	float x1b, y1b, x2b, y2b;
+
 	if(axis == YAXIS) {
 		unsigned int west = this->court1->getEdge(DirectionMappings::getLeftOf(this->direction));
 		unsigned int east = this->court2->getEdge(DirectionMappings::getRightOf(this->direction));
@@ -32,9 +35,10 @@ void Walkway::toFile(std::ostream &file){
 		width = (east - west) * SCALE_FACTOR;
 		height = (WALKWAY_WIDTH) * SCALE_FACTOR;
 
-		file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << WALKWAY_STYLE << "\"/>" << std::endl;
-		file << "<line x1=\"" << xcoord << "\" y1=\"" << ycoord << "\" x2=\"" << (xcoord + width) << "\" y2=\"" << ycoord << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
-		file << "<line x1=\"" << xcoord << "\" y1=\"" << (ycoord + height) << "\" x2=\"" << (xcoord + width) << "\" y2=\"" << (ycoord + height) << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
+		x2a = xcoord + width;
+		y2a = ycoord;
+		x1b = xcoord;
+		y1b = ycoord + height;
 	}
 	else{
 		unsigned int north = this->court1->getEdge(DirectionMappings::getLeftOf(this->direction));
@@ -50,10 +54,18 @@ void Walkway::toFile(std::ostream &file){
 		height = (south - north) * SCALE_FACTOR;
 		width = (WALKWAY_WIDTH) * SCALE_FACTOR;
 
-		file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << WALKWAY_STYLE << "\"/>" << std::endl;
-		file << "<line x1=\"" << xcoord << "\" y1=\"" << ycoord << "\" x2=\"" << xcoord << "\" y2=\"" << (ycoord+height) << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
-		file << "<line x1=\"" << (xcoord + width) << "\" y1=\"" << ycoord << "\" x2=\"" << (xcoord + width) << "\" y2=\"" << (ycoord + height) << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
+		x2a = xcoord;
+		y2a = ycoord + height;
+		x1b = xcoord + width;
+		y1b = ycoord;
 	}
 
-	//file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << WALKWAY_STYLE << "\"/>" << std::endl;
+	x1a = xcoord;
+	y1a = ycoord;
+	x2b = xcoord + width;
+	y2b = ycoord + height;
+
+	file << "<rect x=\"" << xcoord << "\" y=\"" << ycoord << "\" width=\"" << width << "\" height=\"" << height << "\" style=\"" << WALKWAY_STYLE << "\"/>" << std::endl;
+	file << "<line x1=\"" << x1a << "\" y1=\"" << y1a << "\" x2=\"" << x2a << "\" y2=\"" << y2a << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
+	file << "<line x1=\"" << x1b << "\" y1=\"" << y1b << "\" x2=\"" << x2b << "\" y2=\"" << y2b << "\" style=\"" << WALKWAY_EDGE_STYLE << "\" />" << std::endl;
 }
