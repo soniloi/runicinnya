@@ -74,6 +74,11 @@ void City::toFile(ofstream &file){
 		count++;
 	}
 
+	// Walkways
+	for (auto it = this->walkways.begin(); it != this->walkways.end(); it++){
+		(*it)->toFile(file);
+	}
+
 	// Perimeter
 	auto it = this->perimeter.begin();
 	if(it != this->perimeter.end()){
