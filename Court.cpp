@@ -1,11 +1,6 @@
 #include "Court.h"
 
-std::map<Direction, Axis> Court::axisOf = Court::createAxisOf();
 std::map<Direction, unsigned int> Court::positionIndexOf = Court::createPositionIndexOf();
-std::map<Direction, Direction> Court::oppositeOf = Court::createOppositeOf();
-std::map<Direction, int> Court::polarityOf = Court::createPolarityOf();
-std::map<Direction, Direction> Court::leftOf = Court::createLeftOf();
-std::map<Direction, Direction> Court::rightOf = Court::createRightOf();
 
 using namespace std; // FIXME: only for debugging
 
@@ -44,7 +39,7 @@ void Court::swap(unsigned int &num1, unsigned int &num2){
 }
 
 unsigned int Court::getEdge(Direction dir){
-	Axis axis = Court::axisOf[dir];
+	Axis axis = DirectionMappings::getAxisOf(dir);
 	unsigned int ind = Court::positionIndexOf[dir];
 	return this->edges[axis][ind];
 }
@@ -123,8 +118,8 @@ bool Court::resolveCollision(Axis primaryAxis, unsigned int &primaryLowerPropose
 bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, unsigned int &upperBound){
 	for(int i = 0; i < (int) NUM_DIRECTIONS; ++i){
 		Direction dir = (Direction) i;
-		int polarity = Court::polarityOf[dir];
-		Direction facingDir = Court::oppositeOf[dir];
+		int polarity = DirectionMappings::getPolarityOf(dir);
+		Direction facingDir = DirectionMappings::getOppositeOf(dir);
 
 		unsigned int thisPrimaryCoord = this->getEdge(dir);
 		unsigned int thatPrimaryCoord = that->getEdge(facingDir);
@@ -132,13 +127,13 @@ bool Court::adjacentTo(Court * that, Direction &side, unsigned int &lowerBound, 
 		for(int j = WALKWAY_LENGTH_MIN; j <= WALKWAY_LENGTH_MAX; ++j){
 			if(thatPrimaryCoord == (thisPrimaryCoord + (j * (polarity)))){
 
-				unsigned int thisLeftCoord = this->getEdge(Court::leftOf[dir]);
-				unsigned int thatLeftCoord = that->getEdge(Court::leftOf[dir]);
-				unsigned int thisRightCoord = this->getEdge(Court::rightOf[dir]);
-				unsigned int thatRightCoord = that->getEdge(Court::rightOf[dir]);
+				unsigned int thisLeftCoord = this->getEdge(DirectionMappings::getLeftOf(dir));
+				unsigned int thatLeftCoord = that->getEdge(DirectionMappings::getLeftOf(dir));
+				unsigned int thisRightCoord = this->getEdge(DirectionMappings::getRightOf(dir));
+				unsigned int thatRightCoord = that->getEdge(DirectionMappings::getRightOf(dir));
 
 				// FIXME: refactor the below
-				if(Court::polarityOf[Court::rightOf[dir]] == POLARITY_POSITIVE){
+				if(DirectionMappings::getPolarityOf(DirectionMappings::getRightOf(dir)) == POLARITY_POSITIVE){
 					if(thisLeftCoord < thatLeftCoord && thisRightCoord <= thatLeftCoord){
 						return false;
 					}
@@ -189,10 +184,10 @@ unsigned int Court::getMaxSecondDimension(unsigned int first){
 
 //Output this court to svg as a rect
 void Court::toFile(std::ostream &file){
-	unsigned int west = this->edges[Court::axisOf[WEST]][0];
-	unsigned int east = this->edges[Court::axisOf[EAST]][1];
-	unsigned int north = this->edges[Court::axisOf[NORTH]][0];
-	unsigned int south = this->edges[Court::axisOf[SOUTH]][1];
+	unsigned int west = this->edges[DirectionMappings::getAxisOf(WEST)][0];
+	unsigned int east = this->edges[DirectionMappings::getAxisOf(EAST)][1];
+	unsigned int north = this->edges[DirectionMappings::getAxisOf(NORTH)][0];
+	unsigned int south = this->edges[DirectionMappings::getAxisOf(SOUTH)][1];
 
 	unsigned int xcoord = west * SCALE_FACTOR;
 	unsigned int ycoord = north * SCALE_FACTOR;

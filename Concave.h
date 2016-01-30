@@ -4,9 +4,8 @@
 #include <map>
 #include <sstream> // FIXME: debug
 
+#include "DirectionMappings.h"
 #include "Point.h"
-
-enum Direction{NORTH, EAST, SOUTH, WEST, NUM_DIRECTIONS};
 
 class Concave{
 private:

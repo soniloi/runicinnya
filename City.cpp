@@ -2,12 +2,6 @@
 
 using namespace std;
 
-map<Direction, Direction> City::leftOf = City::createLeftOf();
-map<Direction, Direction> City::rightOf = City::createRightOf();
-map<Direction, Direction> City::oppositeOf = City::createOppositeOf();
-map<Direction, int> City::polarityOf = City::createPolarityOf();
-map<Direction, Axis> City::axisOf = City::createAxisOf();
-
 City::City(){
 	this->maxCoords[EAST] = this->maxCoords[WEST] = STARTX;
 	this->maxCoords[SOUTH] = this->maxCoords[NORTH] = STARTY;
@@ -141,7 +135,7 @@ void City::generate(unsigned int noCourts){
 			unsigned int adjacentLower, adjacentUpper;
 
 			if(current->adjacentTo(other, adjacentSide, adjacentLower, adjacentUpper)){
-				this->walkways.push_back(new Walkway(City::rightOf[adjacentSide], current, other, City::ran(adjacentLower, adjacentUpper)));
+				this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), current, other, City::ran(adjacentLower, adjacentUpper)));
 			}
 		}
 	}
@@ -204,16 +198,16 @@ Court * City::createCourtConvex(){
 
 	// Choose a side at random to add the new court on, and which direction from that the new court should fan
 	Direction side = (Direction) City::ran(0, NUM_DIRECTIONS-1);
-	Axis primaryAxis = City::axisOf[side];
-	int primaryPolarity = City::polarityOf[side];
+	Axis primaryAxis = DirectionMappings::getAxisOf(side);
+	int primaryPolarity = DirectionMappings::getPolarityOf(side);
 	int crossPolarity = POLARITY_POSITIVE;
 	if(City::ran(0, 1))
 		crossPolarity = POLARITY_NEGATIVE;
 
 	// Determine cross boundaries
 	unsigned int crossBound1, crossBound2;
-	crossBound1 = this->maxCoords[City::leftOf[side]];
-	crossBound2 = this->maxCoords[City::rightOf[side]];
+	crossBound1 = this->maxCoords[DirectionMappings::getLeftOf(side)];
+	crossBound2 = this->maxCoords[DirectionMappings::getRightOf(side)];
 	if(crossBound2 < crossBound1)
 		swap(crossBound1, crossBound2);
 
@@ -242,12 +236,12 @@ Court * City::createCourtConcave(){
 	cout << "### Inserting court #" << this->courtCount << " at concave: " << concave->toString() << endl;
 
 	Direction rightEdge = concave->getRightEdge();
-	Axis rightAxis = City::axisOf[rightEdge];
-	int rightPolarity = City::polarityOf[rightEdge];
+	Axis rightAxis = DirectionMappings::getAxisOf(rightEdge);
+	int rightPolarity = DirectionMappings::getPolarityOf(rightEdge);
 
-	Direction lowerEdge = City::leftOf[rightEdge];
+	Direction lowerEdge = DirectionMappings::getLeftOf(rightEdge);
 	Axis lowerAxis = (rightAxis == XAXIS) ? YAXIS : XAXIS;
-	int lowerPolarity = City::polarityOf[lowerEdge];
+	int lowerPolarity = DirectionMappings::getPolarityOf(lowerEdge);
 
 	unsigned int concaveRightDim = concave->getCoord(rightAxis);
 	unsigned int concaveLowerDim = concave->getCoord(lowerAxis);
@@ -342,11 +336,11 @@ void City::updatePerimeter(){
  * Travel the city's perimeter clockwise, adding a perimeter point and a concave point if appropriate
  */
 Court * City::travelClockwise(Court * currCourt, Point * &currPoint, Direction &currDir){
-	Direction leftDir = City::leftOf[currDir];
-	Direction rightDir = City::rightOf[currDir];
-	int polarity = City::polarityOf[currDir];
-	int leftPolarity = City::polarityOf[leftDir];
-	Axis currAxis = City::axisOf[currDir];
+	Direction leftDir = DirectionMappings::getLeftOf(currDir);
+	Direction rightDir = DirectionMappings::getRightOf(currDir);
+	int polarity = DirectionMappings::getPolarityOf(currDir);
+	int leftPolarity = DirectionMappings::getPolarityOf(leftDir);
+	Axis currAxis = DirectionMappings::getAxisOf(currDir);
 	Axis perpendicularAxis = (currAxis == XAXIS) ? YAXIS : XAXIS;
 
 	unsigned int dimToStay = currCourt->getEdge(leftDir);

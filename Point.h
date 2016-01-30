@@ -4,7 +4,7 @@
 #include <map>
 #include <iostream> // FIXME: debug
 
-enum Axis{XAXIS, YAXIS};
+#include "DirectionMappings.h"
 
 class Point{
 private:
