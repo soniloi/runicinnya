@@ -3,7 +3,9 @@
 
 #include "Court.h"
 
-#define WALKWAY_STYLE "fill:rgb(240,224,255);stroke-width:1;stroke:rgb(0,0,0)"
+#define WALKWAY_STYLE "fill:rgb(224,192,255);stroke-width:2;stroke:rgb(224,192,255)"
+//#define WALKWAY_STYLE "fill:rgb(240,224,255);stroke-width:1;stroke:rgb(0,0,0)"
+#define WALKWAY_EDGE_STYLE "stroke:rgb(31,31,31);stroke-width:0.5;stroke-linecap=\'round\'"
 #define WALKWAY_WIDTH COURT_COLUMN_OFFSET
 
 class Walkway{
