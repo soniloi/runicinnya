@@ -48,6 +48,14 @@ unsigned int Court::getIndex(){
 	return this->index;
 }
 
+void Court::addAdjacent(Court * c){
+	this->adjacent.insert(c);
+}
+
+unsigned int Court::countAdjacent(){
+	return this->adjacent.size();
+}
+
 //Return whether a given point lies on the perimeter of this court
 bool Court::hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;

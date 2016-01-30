@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <random>
+#include <set>
 #include <sys/time.h>
 
 #include "Concave.h"
@@ -34,6 +35,7 @@
 class Court {
 private:
 	std::map<Axis, std::vector<unsigned int> > edges;
+	std::set<Court *> adjacent;
 	unsigned int index; // FIXME: probably remove once debugged
 
 	static void swap(unsigned int &num1, unsigned int &num2);
@@ -53,6 +55,8 @@ public:
 	~Court();
 	unsigned int getEdge(Direction dir);
 	unsigned int getIndex(); // FIXME:
+	void addAdjacent(Court * c);
+	unsigned int countAdjacent();
 
 	bool hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	bool resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed);

@@ -108,7 +108,6 @@ void City::generate(unsigned int noCourts){
 		this->updatePerimeter();
 	}
 
-
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * current = (*it);
 		for(auto jt = this->courts.begin(); jt != it; jt++){
@@ -124,8 +123,15 @@ void City::generate(unsigned int noCourts){
 					isUp = true;
 				}
 				this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), current, other, leftEdge, isUp));
+				current->addAdjacent(other);
+				other->addAdjacent(current);
 			}
 		}
+	}
+
+	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
+		Court * current = (*it);
+		std::cout << "Court " << current->getIndex() << " is adjacent to " << current->countAdjacent() << " other courts" << std::endl;
 	}
 
 	// TODO: this should instead be detectBuildings() or computeBuildings() or something, determined based on where courts have been placed
