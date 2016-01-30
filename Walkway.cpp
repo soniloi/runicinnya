@@ -1,10 +1,11 @@
 #include "Walkway.h"
 
-Walkway::Walkway(Direction dir, Court * c1, Court * c2, unsigned int le){
+Walkway::Walkway(Direction dir, Court * c1, Court * c2, unsigned int le, bool isUp){
 	this->direction = dir;
 	this->court1 = c1;
 	this->court2 = c2;
 	this->leftEdge = le;
+	this->up = isUp;
 	//std::cout << "Creating connecting walkway between courts " << c1->getIndex() << " and " << c2->getIndex() << " in direction: " << this->direction << " at coord " << this->leftEdge << std::endl;
 }
 
@@ -12,7 +13,11 @@ Walkway::Walkway(Direction dir, Court * c1, Court * c2, unsigned int le){
 void Walkway::toFile(std::ostream &file){
 	Axis axis = DirectionMappings::getAxisOf(this->direction);
 
-	unsigned int xcoord, ycoord, width, height;
+	float left = this->leftEdge;
+	if(this->up)
+		left -= WALKWAY_WIDTH;
+
+	float xcoord, ycoord, width, height;
 	if(axis == YAXIS) {
 		unsigned int west = this->court1->getEdge(DirectionMappings::getLeftOf(this->direction));
 		unsigned int east = this->court2->getEdge(DirectionMappings::getRightOf(this->direction));
@@ -23,7 +28,7 @@ void Walkway::toFile(std::ostream &file){
 		}
 
 		xcoord = west * SCALE_FACTOR;
-		ycoord = this->leftEdge * SCALE_FACTOR;
+		ycoord = left * SCALE_FACTOR;
 		width = (east - west) * SCALE_FACTOR;
 		height = (WALKWAY_WIDTH) * SCALE_FACTOR;
 
@@ -41,7 +46,7 @@ void Walkway::toFile(std::ostream &file){
 		}
 
 		ycoord = north * SCALE_FACTOR;
-		xcoord = this->leftEdge * SCALE_FACTOR;
+		xcoord = left * SCALE_FACTOR;
 		height = (south - north) * SCALE_FACTOR;
 		width = (WALKWAY_WIDTH) * SCALE_FACTOR;
 

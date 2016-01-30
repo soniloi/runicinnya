@@ -14,9 +14,10 @@ private:
 	Court * court1;
 	Court * court2;
 	unsigned int leftEdge;
+	bool up;
 
 public:
-	Walkway(Direction dir, Court * c1, Court * c2, unsigned int le);
+	Walkway(Direction dir, Court * c1, Court * c2, unsigned int le, bool isUp);
 	void toFile(std::ostream &file);
 };
 

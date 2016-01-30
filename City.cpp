@@ -140,7 +140,13 @@ void City::generate(unsigned int noCourts){
 			unsigned int adjacentLower, adjacentUpper;
 
 			if(current->adjacentTo(other, adjacentSide, adjacentLower, adjacentUpper)){
-				this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), current, other, City::ran(adjacentLower, adjacentUpper)));
+				unsigned int leftEdge = adjacentLower;
+				bool isUp = false;
+				if(City::ran(0, 1)){ // FIXME: this could probably be done more elegantly
+					leftEdge = adjacentUpper;
+					isUp = true;
+				}
+				this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), current, other, leftEdge, isUp));
 			}
 		}
 	}
