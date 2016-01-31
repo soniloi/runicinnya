@@ -57,6 +57,7 @@ public:
 	unsigned int getIndex(); // FIXME:
 	void addAdjacent(Court * c);
 	unsigned int countAdjacent();
+	std::set<Court *> getAdjacent(); // FIXME: would it be better not to have to expose this?
 
 	bool hasOnPerimeter(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord);
 	bool resolveCollision(Axis primaryAxis, unsigned int &primaryLowerProposed, unsigned int &primaryHigherProposed, unsigned int &crossLowerProposed, unsigned int &crossHigherProposed);

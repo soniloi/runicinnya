@@ -22,7 +22,7 @@
 
 class City {
 private:
-	std::list<Court *> courts; // All courtyards making up this city
+	std::list<Court *> courts; // All courtyards making up this city; FIXME: consider making this a vector
 	// This map gets updated on every Court insert; just test whether the Court being inserted expands these boundaries
 	std::map<Direction, unsigned int> maxCoords;
 	unsigned int courtCount; // FIXME: probably remove once debugged

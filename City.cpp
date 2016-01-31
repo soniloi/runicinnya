@@ -101,6 +101,7 @@ void City::generate(unsigned int noCourts){
 	this->insertCourt(nextCourt);
 	this->updatePerimeter();
 
+	// Create courts
 	for(int i = 1; i < noCourts; ++i){
 		nextCourt = this->createCourt();
 		if(nextCourt) // FIXME: make it so it's not possible to get a NULL return
@@ -108,6 +109,7 @@ void City::generate(unsigned int noCourts){
 		this->updatePerimeter();
 	}
 
+	// Add connecting walkways between courts and determine adjacencies
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * current = (*it);
 		for(auto jt = this->courts.begin(); jt != it; jt++){
@@ -132,6 +134,34 @@ void City::generate(unsigned int noCourts){
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
 		Court * current = (*it);
 		std::cout << "Court " << current->getIndex() << " is adjacent to " << current->countAdjacent() << " other courts" << std::endl;
+	}
+
+	// Find courts that are not connected to any other
+	if(!this->courts.empty()){
+		vector<bool> connected; // To mark courts as connected (true) or unconnected (false)
+		connected.resize(this->courts.size(), false);
+		list<Court *> frontier;
+		frontier.push_back(this->courts.front());
+		while(!frontier.empty()){
+			Court * currentNode = frontier.front();
+			frontier.pop_front();
+			set<Court *> currentAdjacent = currentNode->getAdjacent();
+			for(auto it = currentAdjacent.begin(); it != currentAdjacent.end(); it++){
+				Court * nextNode = *it;
+				unsigned int nextNodeIndex = nextNode->getIndex();
+				if(!(connected[nextNodeIndex])){ // This is an undirected graph, so we don't want to risk adding nodes that have already been visited
+					frontier.push_back(nextNode);
+					connected[nextNodeIndex] = true;
+				}
+			}
+		}
+
+		int index = 0;
+		for(auto it = connected.begin(); it != connected.end(); it++){
+			if(!(*it))
+				std::cout << "Court " << index << " cannot be reached from Court 0" << std::endl;
+			index++;
+		}
 	}
 
 	// TODO: this should instead be detectBuildings() or computeBuildings() or something, determined based on where courts have been placed
