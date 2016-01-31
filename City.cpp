@@ -91,6 +91,27 @@ void City::toFile(ofstream &file){
 
 }
 
+// Add connecting walkways to a court; connections can only be made to courts in the given range
+void City::addWalkwaysToCourt(Court * primary, list<Court *>::iterator start, list<Court *>::iterator stop){
+	for(auto it = start; it != stop; it++){
+		Court * other = (*it);
+		Direction adjacentSide;
+		unsigned int adjacentLower, adjacentUpper;
+
+		if(primary->adjacentTo(other, adjacentSide, adjacentLower, adjacentUpper)){
+			unsigned int leftEdge = adjacentLower;
+			bool isUp = false;
+			if(City::ran(0, 1)){ // FIXME: this could probably be done more elegantly
+				leftEdge = adjacentUpper;
+				isUp = true;
+			}
+			this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), primary, other, leftEdge, isUp));
+			primary->addAdjacent(other);
+			other->addAdjacent(primary);
+		}
+	}
+}
+
 void City::generate(unsigned int noCourts){
 	if(noCourts == 0)
 		return;
@@ -111,24 +132,7 @@ void City::generate(unsigned int noCourts){
 
 	// Add connecting walkways between courts and determine adjacencies
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){
-		Court * current = (*it);
-		for(auto jt = this->courts.begin(); jt != it; jt++){
-			Court * other = (*jt);
-			Direction adjacentSide;
-			unsigned int adjacentLower, adjacentUpper;
-
-			if(current->adjacentTo(other, adjacentSide, adjacentLower, adjacentUpper)){
-				unsigned int leftEdge = adjacentLower;
-				bool isUp = false;
-				if(City::ran(0, 1)){ // FIXME: this could probably be done more elegantly
-					leftEdge = adjacentUpper;
-					isUp = true;
-				}
-				this->walkways.push_back(new Walkway(DirectionMappings::getRightOf(adjacentSide), current, other, leftEdge, isUp));
-				current->addAdjacent(other);
-				other->addAdjacent(current);
-			}
-		}
+		this->addWalkwaysToCourt(*it, this->courts.begin(), it);
 	}
 
 	for(auto it = this->courts.begin(); it != this->courts.end(); it++){

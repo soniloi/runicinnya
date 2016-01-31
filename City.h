@@ -48,6 +48,8 @@ private:
 	Court * createCourtConvex();
 	Court * createCourtConcave();
 
+	void addWalkwaysToCourt(Court * primary, std::list<Court *>::iterator start, std::list<Court *>::iterator stop);
+
 public:
 	City();
 	~City();
