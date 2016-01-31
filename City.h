@@ -19,18 +19,24 @@
 
 #define BG_COLOUR "white"
 
+typedef std::list<Court *> CourtCollection; // FIXME: consider making this a vector
+typedef std::vector<Point *> PerimeterCollection; // FIXME: use list instead?
+typedef std::vector<Concave *> ConcaveCollection;
+typedef std::list<Building *> BuildingCollection;
+typedef std::list<Walkway *> WalkwayCollection;
+typedef std::map<Direction, unsigned int> MaxCoordsCollection;
 
 class City {
 private:
-	std::list<Court *> courts; // All courtyards making up this city; FIXME: consider making this a vector
+	CourtCollection courts; // All courtyards making up this city
 	// This map gets updated on every Court insert; just test whether the Court being inserted expands these boundaries
-	std::map<Direction, unsigned int> maxCoords;
+	MaxCoordsCollection maxCoords;
 	unsigned int courtCount; // FIXME: probably remove once debugged
 
-	std::vector<Point *> perimeter; // FIXME: use list instead?
-	std::vector<Concave *> concaves;
-	std::list<Building *> buildings;
-	std::list<Walkway *> walkways;
+	PerimeterCollection perimeter;
+	ConcaveCollection concaves;
+	BuildingCollection buildings;
+	WalkwayCollection walkways;
 
 	static unsigned int ran(int from, int to);
 	static unsigned int absolute(int num);
@@ -48,7 +54,7 @@ private:
 	Court * createCourtConvex();
 	Court * createCourtConcave();
 
-	void addWalkwaysToCourt(Court * primary, std::list<Court *>::iterator start, std::list<Court *>::iterator stop);
+	void addWalkwaysToCourt(Court * primary, CourtCollection::iterator start, CourtCollection::iterator stop);
 
 public:
 	City();

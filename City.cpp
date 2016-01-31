@@ -92,7 +92,7 @@ void City::toFile(ofstream &file){
 }
 
 // Add connecting walkways to a court; connections can only be made to courts in the given range
-void City::addWalkwaysToCourt(Court * primary, list<Court *>::iterator start, list<Court *>::iterator stop){
+void City::addWalkwaysToCourt(Court * primary, CourtCollection::iterator start, CourtCollection::iterator stop){
 	for(auto it = start; it != stop; it++){
 		Court * other = (*it);
 		Direction adjacentSide;
