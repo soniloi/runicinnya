@@ -1,7 +1,4 @@
-#include <fstream>
-#include <iostream>
-
-#include "City.h"
+#include "Runicinnya.h"
 
 using namespace std;
 
