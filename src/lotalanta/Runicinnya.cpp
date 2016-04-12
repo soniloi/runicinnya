@@ -1,4 +1,4 @@
-#include "Runicinnya.h"
+#include "../../include/lotalanta/Runicinnya.h"
 
 using namespace std;
 

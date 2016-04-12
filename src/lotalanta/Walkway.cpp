@@ -1,4 +1,4 @@
-#include "Walkway.h"
+#include "../../include/lotalanta/Walkway.h"
 
 Walkway::Walkway(Direction dir, Court * c1, Court * c2, unsigned int le, bool isUp){
 	this->direction = dir;

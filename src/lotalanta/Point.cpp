@@ -1,4 +1,4 @@
-#include "Point.h"
+#include "../../include/lotalanta/Point.h"
 
 Point::Point(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;

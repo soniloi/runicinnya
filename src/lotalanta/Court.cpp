@@ -1,4 +1,4 @@
-#include "Court.h"
+#include "../../include/lotalanta/Court.h"
 
 std::map<Direction, unsigned int> Court::positionIndexOf = Court::createPositionIndexOf();
 

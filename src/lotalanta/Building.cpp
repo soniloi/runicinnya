@@ -1,4 +1,4 @@
-#include "Building.h"
+#include "../../include/lotalanta/Building.h"
 
 Building::Building(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord, unsigned int primaryDim, unsigned int crossDim){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;

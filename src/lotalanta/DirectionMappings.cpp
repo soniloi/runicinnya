@@ -1,4 +1,4 @@
-#include "DirectionMappings.h"
+#include "../../include/lotalanta/DirectionMappings.h"
 
 std::map<Direction, Direction> DirectionMappings::leftOf = DirectionMappings::createLeftOf();
 std::map<Direction, Direction> DirectionMappings::rightOf = DirectionMappings::createRightOf();

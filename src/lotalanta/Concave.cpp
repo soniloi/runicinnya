@@ -1,4 +1,4 @@
-#include "Concave.h"
+#include "../../include/lotalanta/Concave.h"
 
 Concave::Concave(Axis primaryAxis, unsigned int primaryCoord, unsigned int crossCoord, Direction dir){
 	Axis crossAxis = (primaryAxis == XAXIS) ? YAXIS : XAXIS;
